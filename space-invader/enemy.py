@@ -6,13 +6,19 @@ class Enemy:
         self.display = pygame.display.get_surface()
         self.x = pos[0]
         self.y = pos[1]
-        self.speed = 3
-        self.img = pygame.image.load(f'assets/sprites/alien{type}.png')
+        self.type = type
+        self.speed = 3 * (.5 * self.type)
+        self.img = pygame.image.load(f'assets/sprites/alien{self.type}.png')
         self.rect = self.img.get_rect(x=self.x, y=self.y)
 
+    def left(self):
+        self.speed = -abs(self.speed)
+
+    def right(self):
+        self.speed = abs(self.speed)
+
     def advance(self):
-        self.speed *= -1
-        self.y += self.img.get_height() * 2
+        self.y += self.img.get_height() * self.type
 
     def update(self):
         self.x += self.speed
