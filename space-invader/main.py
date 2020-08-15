@@ -69,7 +69,7 @@ while running:
                 del player.bullets[i]
 
     # win check
-    if len(enemies) is 0:
+    if len(enemies) == 0:
         running = False
         print('win')
 
