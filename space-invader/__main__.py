@@ -31,6 +31,7 @@ running = True
 moving_left = False
 moving_right = False
 shooting = False
+last_shot_time = pygame.time.get_ticks()
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -55,7 +56,10 @@ while running:
     if moving_right:
         player.right()
     if shooting:
-        player.shoot()
+        current_time = pygame.time.get_ticks()
+        if current_time - last_shot_time > 500:
+            player.shoot()
+            last_shot_time = current_time
 
     # enemy movement
     for e in enemies:
@@ -95,3 +99,4 @@ while running:
     player.update()
     pygame.display.update()
     clock.tick(FPS)
+pygame.quit()

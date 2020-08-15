@@ -32,7 +32,7 @@ class Player:
         self.x += self.speed
 
     def shoot(self):
-        bulletx = self.x + self.img.get_width()/2 - 2
+        bulletx = self.x + self.img.get_width() / 2 - 2
         self.bullets.append(Bullet((bulletx, self.y + 36)))
 
     def update(self):
