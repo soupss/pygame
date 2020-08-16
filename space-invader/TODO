@@ -1,10 +1,11 @@
-- 30fps
-- realistic retro (pixel snap)
 - enemies shoot back
 - add obstacles
 - destroyable obstacles
-- phases + levels
 - score text
 - sound, music
 - main menu
 - death animations
+- enemy animations
+- lazer attack
+- bonus ship for extra points
+- 5 alien sprites total
