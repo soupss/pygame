@@ -2,16 +2,23 @@ import pygame
 
 
 class Bullet:
-    def __init__(self, pos):
+    def __init__(self, pos, friendly=True):
         self.display = pygame.display.get_surface()
+        self.friendly = friendly
         self.x = pos[0]
         self.y = pos[1]
-        self.speed = 20
+        if friendly:
+            self.speed = 16
+        else:
+            self.speed = 5
         self.img = pygame.image.load('assets/sprites/bullet.png')
         self.rect = self.img.get_rect(x=self.x, y=self.y)
 
     def update(self):
-        self.y -= self.speed
+        if self.friendly:
+            self.y -= self.speed
+        else:
+            self.y += self.speed
         self.rect = self.display.blit(self.img, (self.x, self.y))
 
 
@@ -20,7 +27,7 @@ class Player:
         self.display = pygame.display.get_surface()
         self.x = pos[0]
         self.y = pos[1]
-        self.speed = 20
+        self.speed = 5
         self.img = pygame.image.load('assets/sprites/ship.png')
         self.rect = self.img.get_rect(x=self.x, y=self.y)
         self.bullets = []
@@ -36,6 +43,7 @@ class Player:
         self.bullets.append(Bullet((bulletx, self.y + 36)))
 
     def update(self):
+        print('player:', self.speed)
         if self.x <= 0:
             self.x = 0
         if self.x + self.img.get_width() >= self.display.get_width():

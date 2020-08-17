@@ -1,4 +1,5 @@
 import pygame
+import random
 from player import Player
 from enemy import Enemy, Explosion
 pygame.init()
@@ -14,6 +15,7 @@ SCREENHEIGHT = 256 * SCREENSCALE  # 1024
 BASEY = SCREENHEIGHT - 20 - _p.img.get_height()
 FPS = 60
 SHOOT_DELAY = 500  # time between player shots in ms
+ENEMY_SHOOT_DELAY = 2000
 
 screen = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
 clock = pygame.time.Clock()
@@ -38,6 +40,7 @@ moving_left = False
 moving_right = False
 shooting = False
 last_shot_time = pygame.time.get_ticks()
+enemy_last_shot_time = pygame.time.get_ticks()
 enemy_advance = 0
 explosions = []
 while running:
@@ -70,7 +73,7 @@ while running:
             player.shoot()
             last_shot_time = current_time
 
-    # enemy movement
+    # enemy behavior
     for e in enemies:
         if e.x + e.img.get_width() >= screen.get_width():
             for E in enemies:
@@ -82,21 +85,33 @@ while running:
                 E.right()
                 enemy_advance = 5
             break
+        current_time = pygame.time.get_ticks()
+        if current_time - enemy_last_shot_time > ENEMY_SHOOT_DELAY:
+            random.choice(enemies).shoot()
+            enemy_last_shot_time = current_time
     if enemy_advance != 0:
         for e in enemies:
             e.advance()
         enemy_advance -= 1
 
     # collision
+    # enemy - player
     for e in enemies:
         if e.rect.colliderect(player.rect) or e.y + e.img.get_height() > SCREENHEIGHT:
             running = False
+    # player bullets
     for i, b in enumerate(player.bullets):
         for I, e in enumerate(enemies):
             if b.rect.colliderect(e.rect):
                 del player.bullets[i]
                 explosions.append(Explosion(e.x, e.y))
                 del enemies[I]
+    # enemy bullets
+    for e in enemies:
+        for i, b in enumerate(e.bullets):
+            if b.rect.colliderect(player.rect):
+                del e.bullets[i]
+                running = False
 
     # win check
     if len(enemies) == 0:
@@ -109,19 +124,19 @@ while running:
         # this ugly way of doing it gives me the most control
         e = len(enemies)
         if e <= 5:
-            return _e.base_speed * 8
+            return 6.5
         elif e <= 10:
-            return _e.base_speed * 6
+            return 5
         elif e <= 15:
-            return _e.base_speed * 4.5
+            return 3.8
         elif e <= 20:
-            return _e.base_speed * 3.5
+            return 3
         elif e <= 25:
-            return _e.base_speed * 2.5
+            return 2.5
         elif e <= 30:
-            return _e.base_speed * 2
+            return 1.8
         elif e <= 35:
-            return _e.base_speed * 1.5
+            return 1.3
         else:
             return _e.base_speed
 
@@ -132,6 +147,7 @@ while running:
     if explosions:
         for e in explosions:
             e.update()
+    print('enemy:', enemies[0].speed)
     player.update()
     pygame.display.update()
     clock.tick(FPS)
