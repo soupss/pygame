@@ -9,13 +9,14 @@ _e = Enemy((-1000, -1000), 1)
 # base player instance
 _p = Player((-1000, -1000))
 
+SCREENEDGE = 140
 SCREENSCALE = 4
 SCREENWIDTH = 224 * SCREENSCALE  # 896
 SCREENHEIGHT = 256 * SCREENSCALE  # 1024
-BASEY = SCREENHEIGHT - 20 - _p.img.get_height()
+BASEY = SCREENHEIGHT - SCREENEDGE - _p.img.get_height()
 FPS = 60
-SHOOT_DELAY = 500  # time between player shots in ms
-ENEMY_SHOOT_DELAY = 2000
+SHOOT_DELAY = 750  # time between player shots in ms
+ENEMY_SHOOT_DELAY = 1000
 
 screen = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
 clock = pygame.time.Clock()
@@ -23,16 +24,16 @@ pygame.display.set_caption('Space Invaders')
 
 player = Player((SCREENWIDTH / 2 - 32, BASEY))
 
-ENEMY_COLS = 8
+ENEMY_COLS = 11
 ENEMY_ROWS = 5
-ENEMY_SPACE = 32  # space between enemies
+ENEMY_SPACE = _e.img.get_width() * 0.5  # space between enemies
 enemies = []
 
 
 # spawn enemies
 for col in range(ENEMY_COLS):
     for row in range(ENEMY_ROWS):
-        start_pos = ((_e.img.get_width() + ENEMY_SPACE) * col, (_e.img.get_height() + ENEMY_SPACE) * row)
+        start_pos = ((_e.img.get_width() + ENEMY_SPACE) * col, SCREENEDGE + (_e.img.get_height() + ENEMY_SPACE) * row)
         enemies.append(Enemy(start_pos, 1))  # new alien type each row
 
 running = True
@@ -41,10 +42,16 @@ moving_right = False
 shooting = False
 last_shot_time = pygame.time.get_ticks()
 enemy_last_shot_time = pygame.time.get_ticks()
+valid_shooter = False
 enemy_advance = 0
 explosions = []
 while running:
     screen.fill((0, 0, 0))
+    # win check
+    if len(enemies) == 0:
+        running = False
+        print('win')
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -75,19 +82,22 @@ while running:
 
     # enemy behavior
     for e in enemies:
+        # hitting edges
         if e.x + e.img.get_width() >= screen.get_width():
             for E in enemies:
                 E.left()
-                enemy_advance = 5
+                enemy_advance = 7
             break
         elif e.x <= 0:
             for E in enemies:
                 E.right()
-                enemy_advance = 5
+                enemy_advance = 7
             break
+        # shooting
         current_time = pygame.time.get_ticks()
         if current_time - enemy_last_shot_time > ENEMY_SHOOT_DELAY:
-            random.choice(enemies).shoot()
+            selected_enemy = random.choice(enemies)
+            selected_enemy.shoot()
             enemy_last_shot_time = current_time
     if enemy_advance != 0:
         for e in enemies:
@@ -95,7 +105,7 @@ while running:
         enemy_advance -= 1
 
     # collision
-    # enemy - player
+    # enemy and player
     for e in enemies:
         if e.rect.colliderect(player.rect) or e.y + e.img.get_height() > SCREENHEIGHT:
             running = False
@@ -112,11 +122,6 @@ while running:
             if b.rect.colliderect(player.rect):
                 del e.bullets[i]
                 running = False
-
-    # win check
-    if len(enemies) == 0:
-        running = False
-        print('win')
 
     def get_enemy_speed():
         # max enemies = 8x5 = 40
@@ -147,7 +152,6 @@ while running:
     if explosions:
         for e in explosions:
             e.update()
-    print('enemy:', enemies[0].speed)
     player.update()
     pygame.display.update()
     clock.tick(FPS)

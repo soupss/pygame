@@ -10,3 +10,4 @@
 - player lives
 - animated enemy bullets
 - bullet/bullet collision+animation
+- only bottom enemies shoot

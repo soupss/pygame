@@ -1,6 +1,6 @@
 import pygame
 from player import Bullet
-
+IMAGESCALE = 0.8
 
 class Explosion:
     def __init__(self, x, y):
@@ -8,6 +8,7 @@ class Explosion:
         self.x = x
         self.y = y
         self.img = pygame.image.load('assets/sprites/explosion.png')
+        self.img = pygame.transform.rotozoom(self.img, 0, IMAGESCALE)
         self.exploded_time = pygame.time.get_ticks()
 
     def update(self):
@@ -26,6 +27,7 @@ class Enemy:
         self.speed = self.base_speed
         self.dir = 1  # 1 = right, -1 = left
         self.img = pygame.image.load(f'assets/sprites/alien{self.type}.png')
+        self.img = pygame.transform.rotozoom(self.img, 0, IMAGESCALE)
         self.rect = self.img.get_rect(x=self.x, y=self.y)
         self.bullets = []
 

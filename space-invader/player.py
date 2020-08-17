@@ -1,4 +1,5 @@
 import pygame
+IMAGESCALE = 0.8
 
 
 class Bullet:
@@ -12,6 +13,7 @@ class Bullet:
         else:
             self.speed = 5
         self.img = pygame.image.load('assets/sprites/bullet.png')
+        self.img = pygame.transform.rotozoom(self.img, 0, IMAGESCALE)
         self.rect = self.img.get_rect(x=self.x, y=self.y)
 
     def update(self):
@@ -29,6 +31,7 @@ class Player:
         self.y = pos[1]
         self.speed = 5
         self.img = pygame.image.load('assets/sprites/ship.png')
+        self.img = pygame.transform.rotozoom(self.img, 0, IMAGESCALE)
         self.rect = self.img.get_rect(x=self.x, y=self.y)
         self.bullets = []
 
@@ -43,7 +46,6 @@ class Player:
         self.bullets.append(Bullet((bulletx, self.y + 36)))
 
     def update(self):
-        print('player:', self.speed)
         if self.x <= 0:
             self.x = 0
         if self.x + self.img.get_width() >= self.display.get_width():
