@@ -1,14 +1,19 @@
 import pygame
 from player import Player
-from enemy import Enemy
+from enemy import Enemy, Explosion
 pygame.init()
+
+# base enemy instance to check enemy vars
+_e = Enemy((-1000, -1000), 1)
+# base player instance
+_p = Player((-1000, -1000))
 
 SCREENSCALE = 4
 SCREENWIDTH = 224 * SCREENSCALE  # 896
 SCREENHEIGHT = 256 * SCREENSCALE  # 1024
-BASEY = SCREENHEIGHT - 20 - 64
+BASEY = SCREENHEIGHT - 20 - _p.img.get_height()
 FPS = 60
-SHOOT_DELAY = 500  # ms
+SHOOT_DELAY = 500  # time between player shots in ms
 
 screen = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
 clock = pygame.time.Clock()
@@ -18,12 +23,9 @@ player = Player((SCREENWIDTH / 2 - 32, BASEY))
 
 ENEMY_COLS = 8
 ENEMY_ROWS = 5
-ENEMY_SPACE = 32
+ENEMY_SPACE = 32  # space between enemies
 enemies = []
 
-# base enemy instance to check enemy vars
-_e = Enemy((-1000, -1000), 1)
-print(_e.img.get_width())
 
 # spawn enemies
 for col in range(ENEMY_COLS):
@@ -37,7 +39,9 @@ moving_right = False
 shooting = False
 last_shot_time = pygame.time.get_ticks()
 enemy_advance = 0
+explosions = []
 while running:
+    screen.fill((0, 0, 0))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -90,8 +94,9 @@ while running:
     for i, b in enumerate(player.bullets):
         for I, e in enumerate(enemies):
             if b.rect.colliderect(e.rect):
-                del enemies[I]
                 del player.bullets[i]
+                explosions.append(Explosion(e.x, e.y))
+                del enemies[I]
 
     # win check
     if len(enemies) == 0:
@@ -121,11 +126,12 @@ while running:
             return _e.base_speed
 
     # update and draw
-    screen.fill((0, 0, 0))
     for e in enemies:
         e.speed = get_enemy_speed()
         e.update()
-    # print(f'speed={e.speed}\nlen={len(enemies)}')
+    if explosions:
+        for e in explosions:
+            e.update()
     player.update()
     pygame.display.update()
     clock.tick(FPS)
