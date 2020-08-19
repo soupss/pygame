@@ -36,9 +36,9 @@ class MobPack():
                 self.advance_frames -= 1
             else:
                 for m in self.mobs:
+                    m.rect.x += m.speed
+                for m in self.mobs:
                     if m.rect.right >= WIDTH or m.rect.left <= 0:
                         for M in self.mobs:
                             M.speed *= -1
                         self.advance_frames = 10
-                for m in self.mobs:
-                    m.rect.x += m.speed
