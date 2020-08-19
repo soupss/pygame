@@ -24,9 +24,9 @@ class Player(pygame.sprite.Sprite):
         self.speedx = 0
         keys = pygame.key.get_pressed()
         if keys[pygame.K_h]:
-            self.speedx = -5
+            self.speedx = -4
         if keys[pygame.K_l]:
-            self.speedx = 5
+            self.speedx = 4
         if keys[pygame.K_z]:
             current_time = pygame.time.get_ticks()
             if current_time - self.last_shot_time > self.SHOOT_DELAY:

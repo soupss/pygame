@@ -26,7 +26,7 @@ class PlayerBullet(Bullet):
 class EnemyBullet(Bullet):
     def __init__(self, x, y):
         Bullet.__init__(self, x, IMG.PLAYER_BULLET)
-        self.speedy = 6
+        self.speedy = 5
         self.rect.top = y - self.speedy
 
     def update(self):
