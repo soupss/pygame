@@ -47,11 +47,23 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_q:
                 running = False
+
+    # dynamic sprite groups
     for bullet in player.bullets:
+        sprites.add(bullet)
+    for bullet in mob_pack.bullets:
         sprites.add(bullet)
 
     # logic
+    if len(mob_pack.mobs) == 0:
+        print('win')
+        running = False
     hits = pygame.sprite.groupcollide(player.bullets, mob_pack.mobs, True, True)
+    bullet_hits = pygame.sprite.spritecollide(player, mob_pack.bullets, False)
+    mob_hits = pygame.sprite.spritecollide(player, mob_pack.mobs, False)
+    if bullet_hits or mob_hits:
+        print('player hit')
+        running = False
 
     # update
     sprites.update()

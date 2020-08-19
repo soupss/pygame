@@ -19,4 +19,4 @@ class Images:
 
 print('loading sprite images...')
 IMG = Images()
-print('all sprite images loaded!')
+print('all sprite images loaded')
