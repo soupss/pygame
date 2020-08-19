@@ -1,0 +1,7 @@
+- enemies and enemy group behaviour
+- player shooting
+- create and implement sprites
+    - enemy
+    - player
+    - bullet
+    - explosion
