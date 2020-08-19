@@ -1,4 +1,5 @@
 import pygame
+from os import path
 '''
 Space Invaders clone
 '''
@@ -14,10 +15,7 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-
-# uses constants so imported after
-from sprites.player import Player
-from sprites.mob import MobPack
+BASE_DIR = path.join(path.dirname(__file__))
 
 # pygame initialization
 pygame.init()
@@ -26,17 +24,17 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Space Invaders')
 clock = pygame.time.Clock()
 
+# uses constants and display so imported after
+from sprites.player import Player
+from sprites.mob import MobPack
 
 # prepare sprites and groups
 sprites = pygame.sprite.Group()
-mobs = pygame.sprite.Group()
-
 player = Player()
 sprites.add(player)
 
 mob_pack = MobPack(20, 80, 11, 5)
 for mob in mob_pack.mobs:
-    mobs.add(mob)
     sprites.add(mob)
 
 # game loop
@@ -49,13 +47,18 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_q:
                 running = False
+    for bullet in player.bullets:
+        sprites.add(bullet)
+
+    # logic
+    hits = pygame.sprite.groupcollide(player.bullets, mob_pack.mobs, True, True)
 
     # update
     sprites.update()
     mob_pack.update()
 
     # render
-    screen.fill(BLACK)
+    screen.fill(BLUE)
     sprites.draw(screen)
     pygame.display.flip()
 

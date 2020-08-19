@@ -1,6 +1,3 @@
-- player shooting
 - create and implement sprites
-    - enemy
-    - player
-    - bullet
     - explosion
+- enemy shooting
