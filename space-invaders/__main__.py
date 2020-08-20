@@ -24,7 +24,15 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Space Invaders')
 clock = pygame.time.Clock()
 
-# uses constants and display so imported after
+font_name = pygame.font.match_font('consolas')
+def draw_text(text, size, pos, color=WHITE):
+    font = pygame.font.Font(font_name, size)
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect()
+    text_rect.center = pos
+    screen.blit(text_surface, text_rect)
+
+# uses vars above this
 from sprites.player import Player
 from sprites.mob import MobPack
 from sprites.wall import Wall
@@ -45,9 +53,13 @@ for i in range(1, 4 + 1):
     wall.add(sprites, walls)
 del temp
 
-mob_pack = MobPack(20, 80, 11, 5)
+mob_pack = MobPack(30, 150, 11, 5)
 for mob in mob_pack.mobs:
     sprites.add(mob)
+
+
+score = 0
+lives = 3
 
 # game loop
 running = True
@@ -70,9 +82,15 @@ while running:
     if len(mob_pack.mobs) == 0:
         print('win')
         running = False
+    elif lives <= 0:
+        print('lose')
+        running = False
 
     # player shoots mobs
     player_bullets_hit_mobs = pygame.sprite.groupcollide(player.bullets, mob_pack.mobs, True, True)
+
+    for hit in player_bullets_hit_mobs:
+        score += 10
 
     # wall collision
     player_bullets_hit_walls = pygame.sprite.groupcollide(walls, player.bullets, False, True)
@@ -83,11 +101,10 @@ while running:
         wall.hit()
 
     # things hit player
-    mob_bullets_hit_player = pygame.sprite.spritecollide(player, mob_pack.bullets, False)
-    mobs_hit_player = pygame.sprite.spritecollide(player, mob_pack.mobs, False)
+    mob_bullets_hit_player = pygame.sprite.spritecollide(player, mob_pack.bullets, True)
+    mobs_hit_player = pygame.sprite.spritecollide(player, mob_pack.mobs, True)
     if mob_bullets_hit_player or mobs_hit_player:
-        print('player hit')
-        running = False
+        lives -= 1
 
     # update
     sprites.update()
@@ -96,6 +113,15 @@ while running:
     # render
     screen.fill(BLUE)
     sprites.draw(screen)
+    score_size = 25
+    score_offset = 25
+    score_spacing = 30
+    draw_text('score', score_size, (WIDTH / 3, score_offset))
+    draw_text(str(score), score_size, (WIDTH / 3, score_offset + score_spacing))
+    draw_text('hi-score', score_size, (WIDTH / 1.5, score_offset))
+    draw_text(str(0), score_size, (WIDTH / 1.5, score_offset + score_spacing))
+
+    draw_text(str(lives), 30, (WIDTH / 8, HEIGHT - 30))
     pygame.display.flip()
 
 pygame.quit()

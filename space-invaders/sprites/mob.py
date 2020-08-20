@@ -11,7 +11,7 @@ class Mob(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.pos = Vector2(pos)
         self.image = IMG.ALIENS[f'{type}']
-        self.rect = self.image.get_rect(center = self.pos)
+        self.rect = self.image.get_rect(topleft = self.pos)
         self.speed = Vector2()
         self.dir = Vector2(1, 0)
         self.bullets = pygame.sprite.Group()

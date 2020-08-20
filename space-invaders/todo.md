@@ -1,10 +1,10 @@
 - different kind of aliens
-- text logic
-- wall health
-- player lives
+- custom font
+- player lives visualization
 - enemies explode
 - enemy animations
 - animated enemy bullets
+- visually clarify game field
 - bullet/bullet collision+animation
 - sound, music
 - main menu
