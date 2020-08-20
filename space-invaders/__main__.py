@@ -88,22 +88,22 @@ while running:
         running = False
 
     # player shoots mobs
-    player_bullets_hit_mobs = pygame.sprite.groupcollide(mob_pack.mobs, player.bullets, True, True)
+    player_bullets_hit_mobs = pygame.sprite.groupcollide(mob_pack.mobs, player.bullets, True, True, pygame.sprite.collide_mask)
 
     for mob in player_bullets_hit_mobs:
         score += mob.type * 10
 
     # wall collision
-    player_bullets_hit_walls = pygame.sprite.groupcollide(walls, player.bullets, False, True)
-    mob_bullets_hit_walls = pygame.sprite.groupcollide(walls, mob_pack.bullets, False, True)
+    player_bullets_hit_walls = pygame.sprite.groupcollide(walls, player.bullets, False, True, pygame.sprite.collide_mask)
+    mob_bullets_hit_walls = pygame.sprite.groupcollide(walls, mob_pack.bullets, False, True, pygame.sprite.collide_mask)
     for wall in mob_bullets_hit_walls:
         wall.hit()
     for wall in player_bullets_hit_walls:
         wall.hit()
 
     # things hit player
-    mob_bullets_hit_player = pygame.sprite.spritecollide(player, mob_pack.bullets, True)
-    mobs_hit_player = pygame.sprite.spritecollide(player, mob_pack.mobs, True)
+    mob_bullets_hit_player = pygame.sprite.spritecollide(player, mob_pack.bullets, True, pygame.sprite.collide_mask)
+    mobs_hit_player = pygame.sprite.spritecollide(player, mob_pack.mobs, True, pygame.sprite.collide_mask)
     if mob_bullets_hit_player or mobs_hit_player:
         player.die(pygame.time.get_ticks())
         for bullet in bullets:
@@ -119,8 +119,8 @@ while running:
     # render
     screen.fill(BLUE)
     pygame.draw.line(screen, WHITE, (0, FIELD.y), (WIDTH, FIELD.y), 2)
-    player.show_lives()
     sprites.draw(screen)
+    player.draw_lives()
     score_size = 25
     score_offset = 25
     score_spacing = 30
@@ -128,7 +128,6 @@ while running:
     draw_text(str(score), score_size, (int(WIDTH / 3), score_offset + score_spacing))
     draw_text('hi-score', score_size, (int(WIDTH / 1.5), score_offset))
     draw_text(str(0), score_size, (int(WIDTH / 1.5), score_offset + score_spacing))
-
     draw_text('extra lives', 20, (70, HEIGHT - 30))
     pygame.display.flip()
 

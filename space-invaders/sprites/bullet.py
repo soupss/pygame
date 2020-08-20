@@ -9,6 +9,7 @@ class Bullet(pygame.sprite.Sprite):
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.centerx = x
+        self.mask = pygame.mask.from_surface(self.image)
 
 
 class PlayerBullet(Bullet):

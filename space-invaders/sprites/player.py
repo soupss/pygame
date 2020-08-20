@@ -14,6 +14,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 80
+        self.mask = pygame.mask.from_surface(self.image)
         self.speedx = 0
         self.lives = 3
         self.bullets = pygame.sprite.Group()
@@ -31,7 +32,7 @@ class Player(pygame.sprite.Sprite):
         self.respawning = True
         self.death_time = pygame.time.get_ticks()
 
-    def show_lives(self):
+    def draw_lives(self):
         offset = Vector2(170, 30)
         spacing = 55
         heart_image = self.image_base

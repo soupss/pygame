@@ -2,12 +2,14 @@ import pygame
 from __main__ import WHITE
 
 
+wallimg = pygame.Surface((80, 70)).convert_alpha()
 class Wall(pygame.sprite.Sprite):
     def __init__(self, pos):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((80, 70))
+        self.image = wallimg
         self.image.fill(WHITE)
         self.rect = self.image.get_rect(center = pos)
+        self.mask = pygame.mask.from_surface(self.image)
         self.health = 21
         self.shrink = round(self.rect.w / self.health + 1)
 
