@@ -1,4 +1,5 @@
 import pygame
+from pygame.math import Vector2
 import random
 from __main__ import WIDTH, HEIGHT, RED
 from sprites import IMG
@@ -8,13 +9,11 @@ from sprites.bullet import EnemyBullet as Bullet
 class Mob(pygame.sprite.Sprite):
     def __init__(self, x, y, type):
         pygame.sprite.Sprite.__init__(self)
+        self.pos = Vector2(x, y)
         self.image = IMG.ALIENS[f'{type}']
-        self.rect = self.image.get_rect()
-        self.basespeed = 1
-        self.speed = self.basespeed
-        self.dir = 1
-        self.rect.x = x
-        self.rect.y = y
+        self.rect = self.image.get_rect(center = self.pos)
+        self.speed = Vector2()
+        self.dir = Vector2(1, 0)
         self.bullets = pygame.sprite.Group()
 
     def shoot(self):
@@ -59,31 +58,11 @@ class MobPack():
             self.bullets.add(selected_shooter.shoot())
             self.last_shot_time = current_time
 
-    def get_speed_multiplier(self, mobs):
-        # multiply speed incrementally when mobs die
-        # max mobs = 55 = 11x5
-        if mobs <= 5:
-            return 2.8
-        elif mobs <= 10:
-            return 2.4
-        elif mobs <= 15:
-            return 2.10
-        elif mobs <= 20:
-            return 1.85
-        elif mobs <= 25:
-            return 1.7
-        elif mobs <= 30:
-            return 1.55
-        elif mobs <= 35:
-            return 1.4
-        elif mobs <= 40:
-            return 1.3
-        elif mobs <= 45:
-            return 1.2
-        elif mobs <= 50:
-            return 1.1
-        else:
-            return 1
+    def get_speed(self, mobs):
+        # increase mob speed when mobs die
+        max = 55  # 11x5
+        dead = max - mobs
+        return dead/25 + 1
 
     def update(self):
         self.shoot()
@@ -91,17 +70,24 @@ class MobPack():
         for m in self.mobs:
             if m.rect.right >= WIDTH:
                 for M in self.mobs:
-                    M.dir = -1
-                self.advance_frames = 10
+                    M.dir.x = -1
+                self.advance_frames = 13
             if m.rect.left <= 0:
                 for M in self.mobs:
-                    M.dir = 1
-                self.advance_frames = 10
+                    M.dir.x = 1
+                self.advance_frames = 13
         # movement
-        for m in self.mobs:
-            m.speed = m.basespeed * self.get_speed_multiplier(len(self.mobs))
-            m.rect.x += m.speed * m.dir
         if self.advance_frames > 0:
             for m in self.mobs:
-                m.rect.y += m.speed
+                m.speed.y = self.get_speed(len(self.mobs))
+                m.dir.y = 1
             self.advance_frames -= 1
+        else:
+            for m in self.mobs:
+                m.dir.y = m.speed.y = 0
+        for m in self.mobs:
+            m.speed.x = self.get_speed(len(self.mobs))
+            m.vel = m.speed.elementwise() * m.dir.elementwise()
+            m.pos += m.vel
+            m.rect.center = m.pos
+        print('vel',self.mobs.sprites()[0].vel)
