@@ -1,7 +1,12 @@
-- **fix enemy speed bug**
-
-    enemies move faster when moving to the left while affected by get_speed_multiplier (when 5 or more enemies have died)
-
-- create and implement sprites
-    - explosion
-- enemy shooting
+- add walls
+- destroyable walls
+- text logic
+- player lives
+- enemies explode
+- enemy animations
+- animated enemy bullets
+- bullet/bullet collision+animation
+- sound, music
+- main menu
+- bonus ship for extra points
+- lazer attack
