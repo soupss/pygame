@@ -9,8 +9,9 @@ from sprites.bullet import EnemyBullet as Bullet
 class Mob(pygame.sprite.Sprite):
     def __init__(self, pos, type):
         pygame.sprite.Sprite.__init__(self)
+        self.type = type
         self.pos = Vector2(pos)
-        self.image = IMG.ALIENS[f'{type}']
+        self.image = IMG.ALIENS[f'{self.type}']
         self.rect = self.image.get_rect(topleft = self.pos)
         self.speed = Vector2()
         self.dir = Vector2(1, 0)
@@ -42,7 +43,18 @@ class MobPack():
             for row in range(rows):
                 x = startx + col * (temp.rect.width + temp.rect.width / 2)
                 y = starty + row * (temp.rect.height + temp.rect.height / 2)
-                mob = Mob((x, y), 1)
+                if row == 0:
+                    mob = Mob((x, y), 3)
+                elif row == 1 or row == 2:
+                    mob = Mob((x, y), 2)
+                elif row == 3 or row == 4:
+                    mob = Mob((x, y), 1)
+                # mob grid, number being mob type
+                # 33333333333
+                # 22222222222
+                # 22222222222
+                # 11111111111
+                # 11111111111
                 self.mobs.add(mob)
                 self.colgroups[col].add(mob)
         del temp

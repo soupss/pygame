@@ -1,5 +1,5 @@
 import pygame
-from __main__ import WIDTH, HEIGHT, WHITE
+from __main__ import FIELD, WHITE
 from sprites import IMG
 
 
@@ -19,7 +19,7 @@ class PlayerBullet(Bullet):
 
     def update(self):
         self.rect.y -= self.speedy
-        if self.rect.bottom < 0:
+        if self.rect.top < 0:
             self.kill()
 
 
@@ -31,5 +31,5 @@ class EnemyBullet(Bullet):
 
     def update(self):
         self.rect.y += self.speedy
-        if self.rect.top > HEIGHT:
+        if self.rect.bottom > FIELD.y:
             self.kill()

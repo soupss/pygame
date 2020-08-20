@@ -2,11 +2,13 @@
 Space Invaders clone
 '''
 import pygame
+from pygame.math import Vector2
 from os import path
 
 # constants
 WIDTH = 224 * 3
 HEIGHT = 256 * 3
+FIELD = Vector2(WIDTH, HEIGHT - 55)
 FPS = 60
 
 BLACK = (0, 0, 0)
@@ -39,7 +41,7 @@ from sprites.wall import Wall
 
 # prepare sprites and groups
 sprites = pygame.sprite.Group()
-all_bullets = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
 walls = pygame.sprite.Group()
 
 player = Player()
@@ -59,7 +61,6 @@ for mob in mob_pack.mobs:
 
 
 score = 0
-lives = 3
 
 # game loop
 running = True
@@ -74,23 +75,23 @@ while running:
 
     # dynamic sprite groups
     for bullet in player.bullets:
-        bullet.add(sprites, all_bullets)
+        bullet.add(sprites, bullets)
     for bullet in mob_pack.bullets:
-        bullet.add(sprites, all_bullets)
+        bullet.add(sprites, bullets)
 
     # logic
     if len(mob_pack.mobs) == 0:
         print('win')
         running = False
-    elif lives <= 0:
+    elif player.lives <= 0:
         print('lose')
         running = False
 
     # player shoots mobs
-    player_bullets_hit_mobs = pygame.sprite.groupcollide(player.bullets, mob_pack.mobs, True, True)
+    player_bullets_hit_mobs = pygame.sprite.groupcollide(mob_pack.mobs, player.bullets, True, True)
 
-    for hit in player_bullets_hit_mobs:
-        score += 10
+    for mob in player_bullets_hit_mobs:
+        score += mob.type * 10
 
     # wall collision
     player_bullets_hit_walls = pygame.sprite.groupcollide(walls, player.bullets, False, True)
@@ -104,24 +105,31 @@ while running:
     mob_bullets_hit_player = pygame.sprite.spritecollide(player, mob_pack.bullets, True)
     mobs_hit_player = pygame.sprite.spritecollide(player, mob_pack.mobs, True)
     if mob_bullets_hit_player or mobs_hit_player:
-        lives -= 1
+        player.die(pygame.time.get_ticks())
+        for bullet in bullets:
+            bullet.kill()
 
     # update
-    sprites.update()
-    mob_pack.update()
+    if player.respawning:
+        player.update()
+    else:
+        sprites.update()
+        mob_pack.update()
 
     # render
     screen.fill(BLUE)
+    pygame.draw.line(screen, WHITE, (0, FIELD.y), (WIDTH, FIELD.y), 2)
+    player.show_lives()
     sprites.draw(screen)
     score_size = 25
     score_offset = 25
     score_spacing = 30
-    draw_text('score', score_size, (WIDTH / 3, score_offset))
-    draw_text(str(score), score_size, (WIDTH / 3, score_offset + score_spacing))
-    draw_text('hi-score', score_size, (WIDTH / 1.5, score_offset))
-    draw_text(str(0), score_size, (WIDTH / 1.5, score_offset + score_spacing))
+    draw_text('score', score_size, (int(WIDTH / 3), score_offset))
+    draw_text(str(score), score_size, (int(WIDTH / 3), score_offset + score_spacing))
+    draw_text('hi-score', score_size, (int(WIDTH / 1.5), score_offset))
+    draw_text(str(0), score_size, (int(WIDTH / 1.5), score_offset + score_spacing))
 
-    draw_text(str(lives), 30, (WIDTH / 8, HEIGHT - 30))
+    draw_text('extra lives', 20, (70, HEIGHT - 30))
     pygame.display.flip()
 
 pygame.quit()

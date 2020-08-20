@@ -1,6 +1,7 @@
-- different kind of aliens
 - custom font
-- player lives visualization
+- display "0" as "0000" and "50" as "0050"
+- clarify player hit
+- high score logic
 - enemies explode
 - enemy animations
 - animated enemy bullets
@@ -9,4 +10,5 @@
 - sound, music
 - main menu
 - bonus ship for extra points
-- lazer attack
+- missile attack
+- test different colors
