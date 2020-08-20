@@ -1,6 +1,6 @@
-- add walls
-- destroyable walls
+- different kind of aliens
 - text logic
+- wall health
 - player lives
 - enemies explode
 - enemy animations

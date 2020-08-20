@@ -1,8 +1,8 @@
-import pygame
-from os import path
 '''
 Space Invaders clone
 '''
+import pygame
+from os import path
 
 # constants
 WIDTH = 224 * 3
@@ -27,11 +27,23 @@ clock = pygame.time.Clock()
 # uses constants and display so imported after
 from sprites.player import Player
 from sprites.mob import MobPack
+from sprites.wall import Wall
 
 # prepare sprites and groups
 sprites = pygame.sprite.Group()
+all_bullets = pygame.sprite.Group()
+walls = pygame.sprite.Group()
+
 player = Player()
 sprites.add(player)
+
+temp = Wall((0, 0))
+for i in range(1, 4 + 1):
+    spacing = WIDTH / 5 + 20
+    offset = (WIDTH - (temp.rect.w * 4 + spacing * 3)) / 2
+    wall = Wall((offset + i*spacing, HEIGHT - 180))
+    wall.add(sprites, walls)
+del temp
 
 mob_pack = MobPack(20, 80, 11, 5)
 for mob in mob_pack.mobs:
@@ -50,18 +62,30 @@ while running:
 
     # dynamic sprite groups
     for bullet in player.bullets:
-        sprites.add(bullet)
+        bullet.add(sprites, all_bullets)
     for bullet in mob_pack.bullets:
-        sprites.add(bullet)
+        bullet.add(sprites, all_bullets)
 
     # logic
     if len(mob_pack.mobs) == 0:
         print('win')
         running = False
-    hits = pygame.sprite.groupcollide(player.bullets, mob_pack.mobs, True, True)
-    bullet_hits = pygame.sprite.spritecollide(player, mob_pack.bullets, False)
-    mob_hits = pygame.sprite.spritecollide(player, mob_pack.mobs, False)
-    if bullet_hits or mob_hits:
+
+    # player shoots mobs
+    player_bullets_hit_mobs = pygame.sprite.groupcollide(player.bullets, mob_pack.mobs, True, True)
+
+    # wall collision
+    player_bullets_hit_walls = pygame.sprite.groupcollide(walls, player.bullets, False, True)
+    mob_bullets_hit_walls = pygame.sprite.groupcollide(walls, mob_pack.bullets, False, True)
+    for wall in mob_bullets_hit_walls:
+        wall.hit()
+    for wall in player_bullets_hit_walls:
+        wall.hit()
+
+    # things hit player
+    mob_bullets_hit_player = pygame.sprite.spritecollide(player, mob_pack.bullets, False)
+    mobs_hit_player = pygame.sprite.spritecollide(player, mob_pack.mobs, False)
+    if mob_bullets_hit_player or mobs_hit_player:
         print('player hit')
         running = False
 

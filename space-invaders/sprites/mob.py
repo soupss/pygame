@@ -7,9 +7,9 @@ from sprites.bullet import EnemyBullet as Bullet
 
 
 class Mob(pygame.sprite.Sprite):
-    def __init__(self, x, y, type):
+    def __init__(self, pos, type):
         pygame.sprite.Sprite.__init__(self)
-        self.pos = Vector2(x, y)
+        self.pos = Vector2(pos)
         self.image = IMG.ALIENS[f'{type}']
         self.rect = self.image.get_rect(center = self.pos)
         self.speed = Vector2()
@@ -26,6 +26,8 @@ class MobPack():
         self.mobs = pygame.sprite.Group()
         self.cols = cols
         self.rows = rows
+        self.basespeed = 0.4
+        self.speed_inc = 0.04
         # array containing groups of mobs - used to see if mob is at the bottom
         self.colgroups = []
         for _ in range(cols):
@@ -35,12 +37,12 @@ class MobPack():
         self.SHOOT_DELAY = 1500
         self.last_shot_time = pygame.time.get_ticks() - self.SHOOT_DELAY
         # temporary instance to access class variables
-        temp = Mob(0, 0, 1)
+        temp = Mob((0, 0), 1)
         for col in range(cols):
             for row in range(rows):
                 x = startx + col * (temp.rect.width + temp.rect.width / 2)
                 y = starty + row * (temp.rect.height + temp.rect.height / 2)
-                mob = Mob(x, y, 1)
+                mob = Mob((x, y), 1)
                 self.mobs.add(mob)
                 self.colgroups[col].add(mob)
         del temp
@@ -62,7 +64,7 @@ class MobPack():
         # increase mob speed when mobs die
         max = 55  # 11x5
         dead = max - mobs
-        return dead/25 + 1
+        return dead*self.speed_inc + self.basespeed
 
     def update(self):
         self.shoot()
@@ -90,4 +92,3 @@ class MobPack():
             m.vel = m.speed.elementwise() * m.dir.elementwise()
             m.pos += m.vel
             m.rect.center = m.pos
-        print('vel',self.mobs.sprites()[0].vel)
