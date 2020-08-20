@@ -12,6 +12,7 @@ class Images:
             '2': pygame.image.load(path.join(IMG_DIR, 'alien2.png')).convert_alpha(),
             '3': pygame.image.load(path.join(IMG_DIR, 'alien3.png')).convert_alpha()
     }
+    BUNKER = pygame.image.load(path.join(IMG_DIR, 'bunker.png')).convert_alpha()
 
 print('loading sprite images...')
 IMG = Images()

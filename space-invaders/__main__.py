@@ -37,22 +37,22 @@ def draw_text(text, size, pos, color=WHITE):
 # uses vars above this
 from sprites.player import Player
 from sprites.mob import MobPack
-from sprites.wall import Wall
+from sprites.bunker import Bunker
 
 # prepare sprites and groups
 sprites = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
-walls = pygame.sprite.Group()
+bunkers = pygame.sprite.Group()
 
 player = Player()
 sprites.add(player)
 
-temp = Wall((0, 0))
-for i in range(1, 4 + 1):
-    spacing = WIDTH / 5 + 20
-    offset = (WIDTH - (temp.rect.w * 4 + spacing * 3)) / 2
-    wall = Wall((offset + i*spacing, HEIGHT - 180))
-    wall.add(sprites, walls)
+temp = Bunker((0, 0))
+for i in range(4):
+    spacing = WIDTH / 5
+    offset = (WIDTH - (temp.rect.w * 4 + (spacing - temp.rect.w )* 3)) / 2
+    bunker = Bunker((offset + spacing * i, HEIGHT - 180))
+    bunker.add(sprites, bunkers)
 del temp
 
 mob_pack = MobPack(30, 150, 11, 5)
@@ -61,6 +61,7 @@ for mob in mob_pack.mobs:
 
 
 score = 0
+invaded = False
 
 # game loop
 running = True
@@ -80,26 +81,25 @@ while running:
         bullet.add(sprites, bullets)
 
     # logic
+    for mob in mob_pack.mobs:
+        if mob.rect.bottom > FIELD.y:
+            invaded = True
     if len(mob_pack.mobs) == 0:
         print('win')
         running = False
-    elif player.lives <= 0:
+    elif player.lives <= 0 or invaded:
         print('lose')
         running = False
 
     # player shoots mobs
     player_bullets_hit_mobs = pygame.sprite.groupcollide(mob_pack.mobs, player.bullets, True, True, pygame.sprite.collide_mask)
-
     for mob in player_bullets_hit_mobs:
         score += mob.type * 10
 
-    # wall collision
-    player_bullets_hit_walls = pygame.sprite.groupcollide(walls, player.bullets, False, True, pygame.sprite.collide_mask)
-    mob_bullets_hit_walls = pygame.sprite.groupcollide(walls, mob_pack.bullets, False, True, pygame.sprite.collide_mask)
-    for wall in mob_bullets_hit_walls:
-        wall.hit()
-    for wall in player_bullets_hit_walls:
-        wall.hit()
+    # bunker collision
+    player_bullets_hit_bunkers = pygame.sprite.groupcollide(bunkers, player.bullets, False, True, pygame.sprite.collide_mask)
+    mob_bullets_hit_bunkers = pygame.sprite.groupcollide(bunkers, mob_pack.bullets, False, True, pygame.sprite.collide_mask)
+    mobs_hit_bunkers = pygame.sprite.groupcollide(bunkers, mob_pack.mobs, True, True, pygame.sprite.collide_mask)
 
     # things hit player
     mob_bullets_hit_player = pygame.sprite.spritecollide(player, mob_pack.bullets, True, pygame.sprite.collide_mask)
