@@ -1,6 +1,6 @@
 import pygame
-from __main__ import FIELD, WHITE
-from sprites import IMG
+from __main__ import FIELD, WHITE, GREEN
+from init import IMG
 
 
 class Bullet(pygame.sprite.Sprite):
@@ -14,7 +14,7 @@ class Bullet(pygame.sprite.Sprite):
 
 class PlayerBullet(Bullet):
     def __init__(self, x, y):
-        Bullet.__init__(self, x, IMG.PLAYER_BULLET)
+        Bullet.__init__(self, x, IMG.get('player_bullet', WHITE))
         self.speedy = 16
         self.rect.bottom = y + self.speedy
 
@@ -26,7 +26,7 @@ class PlayerBullet(Bullet):
 
 class EnemyBullet(Bullet):
     def __init__(self, x, y):
-        Bullet.__init__(self, x, IMG.PLAYER_BULLET)
+        Bullet.__init__(self, x, IMG.get('player_bullet', WHITE))
         self.speedy = 5
         self.rect.top = y - self.speedy
 

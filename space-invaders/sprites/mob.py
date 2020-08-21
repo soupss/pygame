@@ -1,8 +1,8 @@
 import pygame
 from pygame.math import Vector2
 import random
-from __main__ import WIDTH, HEIGHT, RED
-from sprites import IMG
+from __main__ import WIDTH, HEIGHT, WHITE
+from init import IMG
 from sprites.bullet import EnemyBullet as Bullet
 
 
@@ -11,7 +11,7 @@ class Mob(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.type = type
         self.pos = Vector2(pos)
-        self.image = IMG.ALIENS[f'{self.type}']
+        self.image = IMG.get(f'alien{self.type}', WHITE)
         self.rect = self.image.get_rect(topleft = self.pos)
         self.mask = pygame.mask.from_surface(self.image)
         self.speed = Vector2()
@@ -50,12 +50,6 @@ class MobPack():
                     mob = Mob((x, y), 2)
                 elif row == 3 or row == 4:
                     mob = Mob((x, y), 1)
-                # mob grid, number being mob type
-                # 33333333333
-                # 22222222222
-                # 22222222222
-                # 11111111111
-                # 11111111111
                 self.mobs.add(mob)
                 self.colgroups[col].add(mob)
         del temp

@@ -1,16 +1,15 @@
 import pygame
 from pygame.math import Vector2
 from __main__ import WIDTH, HEIGHT, GREEN, screen
-from sprites import IMG
+from init import IMG, SND
 from sprites.bullet import PlayerBullet as Bullet
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image_base = IMG.PLAYER
+        self.image_base = IMG.get('ship', GREEN)
         self.image = self.image_base
-        # self.image.fill((GREEN))
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 80
@@ -25,9 +24,11 @@ class Player(pygame.sprite.Sprite):
         self.respawn_timer = 1500  # time
 
     def shoot(self):
+        SND.sounds['shoot'].play()
         self.bullets.add(Bullet(self.rect.centerx, self.rect.top))
 
     def die(self, time_died):
+        SND.sounds['die'].play()
         self.lives -= 1
         self.respawning = True
         self.death_time = pygame.time.get_ticks()

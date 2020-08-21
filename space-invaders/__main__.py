@@ -6,20 +6,24 @@ from pygame.math import Vector2
 from os import path
 
 # constants
+# sprites are scaled to 300%
+# 12x8 = 36x24
 WIDTH = 224 * 3
 HEIGHT = 256 * 3
 FIELD = Vector2(WIDTH, HEIGHT - 55)
 FPS = 60
 
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
+BLACK = pygame.Color(0, 0, 0)
+WHITE = pygame.Color(255, 255, 255)
+RED = pygame.Color(255, 0, 0)
+GREEN = pygame.Color(0, 255, 0)
+BLUE = pygame.Color(0, 0, 255)
+YELLOW = pygame.Color(255, 255, 0)
 
 BASE_DIR = path.join(path.dirname(__file__))
 
 # pygame initialization
+pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.init()
 pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -35,6 +39,7 @@ def draw_text(text, size, pos, color=WHITE):
     screen.blit(text_surface, text_rect)
 
 # uses vars above this
+from init import SND
 from sprites.player import Player
 from sprites.mob import MobPack
 from sprites.bunker import Bunker
@@ -73,6 +78,10 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_q:
                 running = False
+            if event.key == pygame.K_UP:
+                SND.volume_up()
+            if event.key == pygame.K_DOWN:
+                SND.volume_down()
 
     # dynamic sprite groups
     for bullet in player.bullets:
@@ -94,12 +103,16 @@ while running:
     # player shoots mobs
     player_bullets_hit_mobs = pygame.sprite.groupcollide(mob_pack.mobs, player.bullets, True, True, pygame.sprite.collide_mask)
     for mob in player_bullets_hit_mobs:
+        SND.sounds['score'].play()
         score += mob.type * 10
 
     # bunker collision
     player_bullets_hit_bunkers = pygame.sprite.groupcollide(bunkers, player.bullets, False, True, pygame.sprite.collide_mask)
     mob_bullets_hit_bunkers = pygame.sprite.groupcollide(bunkers, mob_pack.bullets, False, True, pygame.sprite.collide_mask)
-    mobs_hit_bunkers = pygame.sprite.groupcollide(bunkers, mob_pack.mobs, True, True, pygame.sprite.collide_mask)
+    mobs_hit_bunkers = pygame.sprite.groupcollide(bunkers, mob_pack.mobs, True, False, pygame.sprite.collide_mask)
+    for mobs in mobs_hit_bunkers.values():
+        mobs[0].kill()
+        SND.sounds['explosion'].play()
 
     # things hit player
     mob_bullets_hit_player = pygame.sprite.spritecollide(player, mob_pack.bullets, True, pygame.sprite.collide_mask)
@@ -117,8 +130,8 @@ while running:
         mob_pack.update()
 
     # render
-    screen.fill(BLUE)
-    pygame.draw.line(screen, WHITE, (0, FIELD.y), (WIDTH, FIELD.y), 2)
+    screen.fill(BLACK)
+    pygame.draw.line(screen, GREEN, (0, int(FIELD.y)), (WIDTH, int(FIELD.y)), 2)
     sprites.draw(screen)
     player.draw_lives()
     score_size = 25
