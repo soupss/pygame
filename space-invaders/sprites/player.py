@@ -34,7 +34,7 @@ class Player(pygame.sprite.Sprite):
         self.death_time = pygame.time.get_ticks()
 
     def draw_lives(self):
-        offset = Vector2(170, 30)
+        offset = Vector2(210, 30)
         spacing = 55
         heart_image = self.image_base
         for l in range(self.lives - 1):

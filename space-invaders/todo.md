@@ -1,17 +1,20 @@
-### bugs
+#### bugs
 
-#### major
+---
+
+#### todo
 
 - enemies explode
-- explosion animations
+- explosion sprites
     - enemies
     - bunkers
     - bullets
+    - player
 - enemy animations
 - animated enemy bullets
+- add game over and win sound
 - bullet/bullet collision
 - bonus ship for extra points
-- missile attack
 - main menu
 - tutorial
 - animate text
@@ -19,9 +22,9 @@
 
     how?
 
-##### minor
-
-- add game over and win sound
+- music
+- mob speed increase music tempo and mob animation speed
+- new faster wave when all mobs die
 - high score logic
 - custom font
 - display "0" as "0000" and "50" as "0050"

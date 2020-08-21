@@ -21,6 +21,7 @@ BLUE = pygame.Color(0, 0, 255)
 YELLOW = pygame.Color(255, 255, 0)
 
 BASE_DIR = path.join(path.dirname(__file__))
+FONT_DIR = path.join(BASE_DIR, path.join('assets', 'font'))
 
 # pygame initialization
 pygame.mixer.pre_init(44100, -16, 1, 512)
@@ -30,10 +31,9 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Space Invaders')
 clock = pygame.time.Clock()
 
-font_name = pygame.font.match_font('consolas')
 def draw_text(text, size, pos, color=WHITE):
-    font = pygame.font.Font(font_name, size)
-    text_surface = font.render(text, True, color)
+    font = pygame.font.Font(path.join(FONT_DIR, 'Pixeled.ttf'), size)
+    text_surface = font.render(text, False, color)
     text_rect = text_surface.get_rect()
     text_rect.center = pos
     screen.blit(text_surface, text_rect)
@@ -134,14 +134,14 @@ while running:
     pygame.draw.line(screen, GREEN, (0, int(FIELD.y)), (WIDTH, int(FIELD.y)), 2)
     sprites.draw(screen)
     player.draw_lives()
-    score_size = 25
+    score_size = 15
     score_offset = 25
     score_spacing = 30
-    draw_text('score', score_size, (int(WIDTH / 3), score_offset))
+    draw_text('SCORE', score_size, (int(WIDTH / 3), score_offset))
     draw_text(str(score), score_size, (int(WIDTH / 3), score_offset + score_spacing))
-    draw_text('hi-score', score_size, (int(WIDTH / 1.5), score_offset))
+    draw_text('HI-SCORE', score_size, (int(WIDTH / 1.5), score_offset))
     draw_text(str(0), score_size, (int(WIDTH / 1.5), score_offset + score_spacing))
-    draw_text('extra lives', 20, (70, HEIGHT - 30))
+    draw_text('EXTRA LIVES', 15, (90, HEIGHT - 30))
     pygame.display.flip()
 
 pygame.quit()
