@@ -1,6 +1,6 @@
 import pygame
 from __main__ import FIELD, WHITE, GREEN
-from init import IMG
+from tools import IMG
 
 
 class Bullet(pygame.sprite.Sprite):

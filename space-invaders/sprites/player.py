@@ -1,7 +1,7 @@
 import pygame
 from pygame.math import Vector2
 from __main__ import WIDTH, HEIGHT, GREEN, screen
-from init import IMG, SND
+from tools import IMG, SND
 from sprites.bullet import PlayerBullet as Bullet
 
 
@@ -34,7 +34,7 @@ class Player(pygame.sprite.Sprite):
         self.death_time = pygame.time.get_ticks()
 
     def draw_lives(self):
-        offset = Vector2(210, 30)
+        offset = Vector2(250, 30)
         spacing = 55
         heart_image = self.image_base
         for l in range(self.lives - 1):

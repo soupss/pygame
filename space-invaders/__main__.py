@@ -1,9 +1,9 @@
 '''
 Space Invaders clone
 '''
+from os import path
 import pygame
 from pygame.math import Vector2
-from os import path
 
 # constants
 # sprites are scaled to 300%
@@ -31,15 +31,15 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Space Invaders')
 clock = pygame.time.Clock()
 
-def draw_text(text, size, pos, color=WHITE):
-    font = pygame.font.Font(path.join(FONT_DIR, 'Pixeled.ttf'), size)
+def draw_text(text, size, pos, font_name='bpdots.unicasesquare-bold.otf', color=WHITE):
+    font = pygame.font.Font(path.join(FONT_DIR, font_name), size + 10)
     text_surface = font.render(text, False, color)
     text_rect = text_surface.get_rect()
     text_rect.center = pos
     screen.blit(text_surface, text_rect)
 
 # uses vars above this
-from init import SND
+from tools import SND, style_numbers
 from sprites.player import Player
 from sprites.mob import MobPack
 from sprites.bunker import Bunker
@@ -96,7 +96,7 @@ while running:
     if len(mob_pack.mobs) == 0:
         print('win')
         running = False
-    elif player.lives <= 0 or invaded:
+    elif player.lives == 0 or invaded:
         print('lose')
         running = False
 
@@ -107,15 +107,18 @@ while running:
         score += mob.type * 10
 
     # bunker collision
-    player_bullets_hit_bunkers = pygame.sprite.groupcollide(bunkers, player.bullets, False, True, pygame.sprite.collide_mask)
-    mob_bullets_hit_bunkers = pygame.sprite.groupcollide(bunkers, mob_pack.bullets, False, True, pygame.sprite.collide_mask)
+    bullets_hit_bunkers = pygame.sprite.groupcollide(bunkers, bullets, False, True, pygame.sprite.collide_mask)
     mobs_hit_bunkers = pygame.sprite.groupcollide(bunkers, mob_pack.mobs, True, False, pygame.sprite.collide_mask)
+    for bunker, _bullets in bullets_hit_bunkers.items():
+        for bullet in _bullets:
+            pass
+            # bunker.dent(bullet.image, bullet.rect)
     for mobs in mobs_hit_bunkers.values():
         mobs[0].kill()
         SND.sounds['explosion'].play()
 
     # things hit player
-    mob_bullets_hit_player = pygame.sprite.spritecollide(player, mob_pack.bullets, True, pygame.sprite.collide_mask)
+    mob_bullets_hit_player = pygame.sprite.spritecollide(player, mob_pack.bullets, False, pygame.sprite.collide_mask)
     mobs_hit_player = pygame.sprite.spritecollide(player, mob_pack.mobs, True, pygame.sprite.collide_mask)
     if mob_bullets_hit_player or mobs_hit_player:
         player.die(pygame.time.get_ticks())
@@ -134,14 +137,14 @@ while running:
     pygame.draw.line(screen, GREEN, (0, int(FIELD.y)), (WIDTH, int(FIELD.y)), 2)
     sprites.draw(screen)
     player.draw_lives()
-    score_size = 15
+    score_size = 20
     score_offset = 25
     score_spacing = 30
-    draw_text('SCORE', score_size, (int(WIDTH / 3), score_offset))
-    draw_text(str(score), score_size, (int(WIDTH / 3), score_offset + score_spacing))
-    draw_text('HI-SCORE', score_size, (int(WIDTH / 1.5), score_offset))
-    draw_text(str(0), score_size, (int(WIDTH / 1.5), score_offset + score_spacing))
-    draw_text('EXTRA LIVES', 15, (90, HEIGHT - 30))
+    draw_text('SCORE', score_size, (int(WIDTH / 5), score_offset))
+    draw_text(style_numbers(score), score_size, (int(WIDTH / 5), score_offset + score_spacing))
+    draw_text('HI-SCORE', score_size, (int(WIDTH * .8), score_offset))
+    draw_text(style_numbers(0), score_size, (int(WIDTH * .8), score_offset + score_spacing))
+    draw_text('EXTRA LIVES', 20, (110, HEIGHT - 30))
     pygame.display.flip()
 
 pygame.quit()

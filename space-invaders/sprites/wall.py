@@ -13,6 +13,10 @@ class Bunker(pygame.sprite.Sprite):
         self.health = 21
         self.shrink = round(self.rect.w / self.health + 1) - 2
 
+    def dent(self, surf):
+        pass
+        # self.image.blit(missile_surf, (missile_x - self.rect.x, missile_y - self.rect.y))
+
     def hit(self):
         self.health -= 1
         if self.health == 0:

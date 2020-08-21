@@ -1,6 +1,7 @@
 #### bugs
 
----
+- sometimes player bullet collision is ignored
+    - cause: ?
 
 #### todo
 

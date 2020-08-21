@@ -1,8 +1,8 @@
+import random
 import pygame
 from pygame.math import Vector2
-import random
 from __main__ import WIDTH, HEIGHT, WHITE
-from init import IMG
+from tools import IMG
 from sprites.bullet import EnemyBullet as Bullet
 
 
