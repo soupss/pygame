@@ -2,8 +2,10 @@
 
 ### Controls
 
-h - move left
-
-l - move right
-
-z - shoot
+|  key | action          |
+|-----:|:----------------|
+|    h | move left       |
+|    l | move right      |
+|    z | shoot           |
+|   up | increase volume |
+| down | decrease volume |
