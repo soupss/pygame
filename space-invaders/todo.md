@@ -1,3 +1,11 @@
+# urgent
+
+- create game class and organize settings
+
+    tried to refactor current code but failed, very time consuming and disorienting, easier to start from scratch
+
+    have to create new branch and remake the entire game
+
 #### bugs
 
 - sometimes player bullet collision is ignored
