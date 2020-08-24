@@ -13,16 +13,15 @@ class Game:
     def __init__(self):
         pg.mixer.pre_init(44100, -16, 1, 512)
         pg.init()
-        self.backscreen = pg.display.set_mode((0, 0), flags=pg.FULLSCREEN)
-        self.backscreen.fill(BACKSCREEN_COLOR)
-        self.screen = pg.Surface((WIDTH, HEIGHT))
+        # self.backscreen = pg.display.set_mode((0, 0), flags=pg.FULLSCREEN)
+        # self.backscreen.fill(BACKSCREEN_COLOR)
+        # self.screen = pg.Surface((WIDTH, HEIGHT))
+        self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
-        pg.display.toggle_fullscreen()
         self.clock = pg.time.Clock()
-        self.running = True
         self.load_data()
         self.GAMESCREEN_POS = ((pg.display.Info().current_w - WIDTH) / 2, (pg.display.Info().current_h - HEIGHT) / 2)
-        self.score = 0
+        self.running = True
 
 
     def load_data(self):
@@ -31,6 +30,7 @@ class Game:
 
 
     def new(self):
+        self.score = 0
         self.sprites = pg.sprite.Group()  # all sprites
         self.player = pg.sprite.GroupSingle()
         self.mobs = MobGroup()  # spritegroup sub class
@@ -120,20 +120,58 @@ class Game:
     def draw(self):
         self.screen.fill(BACKGROUND_COLOR)
         self.sprites.draw(self.screen)
-        pg.draw.line(self.screen, WHITE, (0, HEIGHT - BOT_SPACING), (WIDTH, HEIGHT - BOT_SPACING), 2)
-        pg.draw.line(self.screen, WHITE, (0, TOP_SPACING), (WIDTH, TOP_SPACING), 2)
+        pg.draw.line(self.screen, WHITE, (0, TOP_SPACING), (WIDTH, TOP_SPACING), 3)
+        pg.draw.line(self.screen, GREEN, (0, HEIGHT - BOT_SPACING), (WIDTH, HEIGHT - BOT_SPACING), 3)
         self.player.sprite.draw_lives(self.screen)
         # display score
         text(self.screen, 'SCORE', SCORE_TEXT_SIZE, (WIDTH / 3, SCORE_LABEL_Y))
         text(self.screen, style_numbers(self.score), SCORE_TEXT_SIZE, (WIDTH / 3, SCORE_VALUE_Y))
         text(self.screen, 'HI-SCORE', SCORE_TEXT_SIZE, (WIDTH / 1.5, SCORE_LABEL_Y))
         # text(self.screen, style_numbers(99999), SCORE_TEXT_SIZE, (WIDTH / 1.5, SCORE_VALUE_Y))
-        self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
+        # self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
         pg.display.flip()
 
 
     def start_screen(self):
-        pass
+        if not self.running:
+            return
+        self.screen.fill(BACKGROUND_COLOR)
+        text(self.screen, 'SPACE', 160, (WIDTH / 2, HEIGHT / 4 - 40), GREEN)
+        text(self.screen, 'INVADERS', 100, (WIDTH / 2, HEIGHT / 4 + 40), GREEN)
+        alien1 = self.spritesheet.get_image(48, 128, 48, 32, WHITE)
+        alien2 = self.spritesheet.get_image(48, 160, 44, 32, WHITE)
+        alien3 = self.spritesheet.get_image(48, 192, 32, 32, WHITE)
+
+        self.screen.blit(alien3, alien3.get_rect(center=(WIDTH/3 + 20, HEIGHT / 2 - 25)))
+        text(self.screen, '= 30 POINTS', 40, (WIDTH / 2 + 40, HEIGHT / 2 - 25))
+
+        self.screen.blit(alien2, alien2.get_rect(center=(WIDTH/3 + 20, HEIGHT / 2 + 25)))
+        text(self.screen, '= 20 POINTS', 40, (WIDTH / 2 + 40, HEIGHT / 2 + 25))
+
+        self.screen.blit(alien1, alien1.get_rect(center=(WIDTH/3 + 20, HEIGHT / 2 + 75)))
+        text(self.screen, '= 10 POINTS', 40, (WIDTH / 2 + 40, HEIGHT / 2 + 75))
+
+        text(self.screen, 'MOVE WITH ARROW KEYS', 30, (WIDTH / 2, HEIGHT * .75 - 30))
+        text(self.screen, 'SHOOT WITH SPACE BAR', 30, (WIDTH / 2, HEIGHT * .75))
+        text(self.screen, 'PRESS ANY KEY TO PLAY...', 30, (WIDTH / 2, HEIGHT * .75 + 30))
+
+        # self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
+        pg.display.flip()
+        self.wait_for_key()
+
+    def wait_for_key(self):
+        waiting = True
+        while waiting:
+            self.clock.tick(FPS)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    waiting = False
+                    self.running = False
+                if event.type == pg.KEYDOWN:
+                    self.sound_controller.play_effect('select')
+                if event.type == pg.KEYUP:
+                    self.sound_controller.play_effect('select2')
+                    waiting = False
 
 
     def gameover_screen(self):

@@ -18,7 +18,7 @@ class PlayerBullet(Bullet):
         self.mask = pg.mask.from_surface(self.image)
 
     def update(self):
-        if self.rect.top < TOP_SPACING:
+        if self.rect.top - 4 < TOP_SPACING:
             self.kill()
         self.rect.y -= PLAYER_BULLET_SPEED
 

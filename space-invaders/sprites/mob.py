@@ -20,7 +20,7 @@ class Mob(pg.sprite.Sprite):
         self.dir = Vector2(1, 0)
         self.speed = Vector2(MOB_BASE_SPEED, MOB_BASE_SPEED)
         self.frame_rate = MOB_BASE_FRAME_RATE
-        self.last_updated = randrange(MOB_BASE_FRAME_RATE)
+        self.last_updated = pg.time.get_ticks()
 
     def load_images(self):
         self.images = [
@@ -77,9 +77,10 @@ class MobGroup(pg.sprite.Group):
                     del cg
                     continue
                 valid_shooters.append(cg.sprites()[-1])
-            selected_shooter = valid_shooters[randrange(len(valid_shooters))]
-            selected_shooter.shoot()
-            self.last_shot = now
+            if valid_shooters:
+                selected_shooter = valid_shooters[randrange(len(valid_shooters))]
+                selected_shooter.shoot()
+                self.last_shot = now
 
     def advance(self):
         if self.advance_frames > 0:
@@ -96,11 +97,21 @@ class MobGroup(pg.sprite.Group):
         dead = max - len(self.mobs)
         return dead * MOB_SPEED_INC_MULTIPLIER + MOB_BASE_SPEED
 
+    def scale(self):
+        # increase mob speed and frame rate when mobs die
+        max = self.cols * self.rows
+        dead = max - len(self.mobs)
+        speed = dead * MOB_SPEED_INC_MULTIPLIER + MOB_BASE_SPEED
+        frame_rate = dead * MOB_FRAMERATE_SCALE + MOB_BASE_FRAME_RATE
+        for mob in self.mobs:
+            mob.speed.x = speed
+            mob.speed.y = speed
+            mob.frame_rate = frame_rate
+
+
     def update(self):
         self.mobs = self.sprites()
-        for mob in self.mobs:
-            mob.speed.x = self.get_speed()
-            mob.speed.y = self.get_speed()
+        self.scale()
         self.shoot()
         # edge hits
         for mob in self.mobs:

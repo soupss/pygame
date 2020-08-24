@@ -50,10 +50,9 @@ class SoundController:
     '''Utility class for loading and controlling sounds.'''
     def __init__(self, sound_name_list):
         self.effects = {}
-        self.effects_channel = pg.mixer.Channel(0)
         for sound_name in sound_name_list:
             self.effects[sound_name] = pg.mixer.Sound(path.join(SOUND_DIR, sound_name+'.ogg'))
-        self.effects_channel.set_volume(.5)
+            self.effects[sound_name].set_volume(.5)
 
     def play_effect(self, effect):
-        self.effects_channel.play(self.effects[effect])
+        self.effects[effect].play()
