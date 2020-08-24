@@ -34,18 +34,20 @@ PLAYER_EXPLODE_FRAME_RATE = 100
 # mob properties
 MOB_WIDTH = 44  # base mob is alien 2
 MOB_HEIGHT = 32
-MOB_BASE_FRAME_RATE = 1250
-MOB_FRAMERATE_SCALE = -15
-MOB_BASE_SPEED = .4
-MOB_SPEED_INC_MULTIPLIER = .04
 MOB_ADVANCE_FRAMES = 13
 MOB_PACK_COLS = 11
 MOB_PACK_ROWS = 5
 MOB_BULLET_FRAME_RATE = 60
 MOB_BULLET_SPEED = 6
-MOB_SHOOT_DELAY = 1500
 MOB_BULLET_HEIGHT = 28
 MOB_START_Y = TOP_SPACING + MOB_HEIGHT / 2 + 20
+
+# mob scaling
+MOB_BASE_SPEED = .4
+MOB_SPEED_SCALE = .04
+MOB_BASE_FRAMERATE = 1000
+MOB_FRAMERATE_SCALE = -15
+MOB_BASE_SHOOT_DELAY = 1500
 
 # bunker properties
 BUNKER_WIDTH = 88
@@ -54,6 +56,9 @@ BUNKER_Y = PLAYER_Y - PLAYER_HEIGHT / 2 - BUNKER_HEIGHT - 20
 
 # explosion properties
 EXPLOSION_TIME = 300
+
+# music
+DUNDUN_RATE = MOB_BASE_FRAMERATE
 
 # resource directories
 BASE_DIR = path.join(path.dirname(__file__))
@@ -74,5 +79,5 @@ BACKGROUND_COLOR = BLACK
 
 # sound effects
 SOUND_NAMES = [
-        'shoot', 'score', 'die', 'select', 'select2', 'explosion'
+        'shoot', 'score', 'die', 'select', 'select2', 'explosion', 'dun', 'dun2'
 ]

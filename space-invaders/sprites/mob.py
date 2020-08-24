@@ -19,7 +19,7 @@ class Mob(pg.sprite.Sprite):
         self.pos = Vector2(self.rect.topleft)
         self.dir = Vector2(1, 0)
         self.speed = Vector2(MOB_BASE_SPEED, MOB_BASE_SPEED)
-        self.frame_rate = MOB_BASE_FRAME_RATE
+        self.frame_rate = MOB_BASE_FRAMERATE
         self.last_updated = pg.time.get_ticks()
 
     def load_images(self):
@@ -57,7 +57,9 @@ class Mob(pg.sprite.Sprite):
         self.rect.topleft = (round(self.pos.x), round(self.pos.y))
 
 class MobGroup(pg.sprite.Group):
-    def __init__(self):
+    '''Mob group class which handles collision, movement, scaling etc.'''
+    def __init__(self, game):
+        self.game = game
         pg.sprite.Group.__init__(self)
         self.mobs = self.sprites()
         self.cols = MOB_PACK_COLS
@@ -70,7 +72,7 @@ class MobGroup(pg.sprite.Group):
 
     def shoot(self):
         now = pg.time.get_ticks()
-        if now - self.last_shot > MOB_SHOOT_DELAY:
+        if now - self.last_shot > MOB_BASE_SHOOT_DELAY:
             valid_shooters = []
             for cg in self.colgroups:
                 if not cg:
@@ -91,22 +93,18 @@ class MobGroup(pg.sprite.Group):
             for mob in self.mobs:
                 mob.dir.y = 0
 
-    def get_speed(self):
-        # increase mob speed when mobs die
-        max = self.cols * self.rows
-        dead = max - len(self.mobs)
-        return dead * MOB_SPEED_INC_MULTIPLIER + MOB_BASE_SPEED
-
     def scale(self):
         # increase mob speed and frame rate when mobs die
         max = self.cols * self.rows
         dead = max - len(self.mobs)
-        speed = dead * MOB_SPEED_INC_MULTIPLIER + MOB_BASE_SPEED
-        frame_rate = dead * MOB_FRAMERATE_SCALE + MOB_BASE_FRAME_RATE
+        speed = dead * MOB_SPEED_SCALE + MOB_BASE_SPEED
+        frame_rate = dead * MOB_FRAMERATE_SCALE + MOB_BASE_FRAMERATE
         for mob in self.mobs:
             mob.speed.x = speed
             mob.speed.y = speed
             mob.frame_rate = frame_rate
+        # music
+        self.game.sound_controller.dundun_rate = frame_rate
 
 
     def update(self):

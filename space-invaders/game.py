@@ -13,15 +13,16 @@ class Game:
     def __init__(self):
         pg.mixer.pre_init(44100, -16, 1, 512)
         pg.init()
-        # self.backscreen = pg.display.set_mode((0, 0), flags=pg.FULLSCREEN)
-        # self.backscreen.fill(BACKSCREEN_COLOR)
-        # self.screen = pg.Surface((WIDTH, HEIGHT))
-        self.screen = pg.display.set_mode((WIDTH, HEIGHT))
+        self.backscreen = pg.display.set_mode((0, 0), flags=pg.FULLSCREEN)
+        self.backscreen.fill(BACKSCREEN_COLOR)
+        self.screen = pg.Surface((WIDTH, HEIGHT))
+        # self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.load_data()
         self.GAMESCREEN_POS = ((pg.display.Info().current_w - WIDTH) / 2, (pg.display.Info().current_h - HEIGHT) / 2)
         self.running = True
+        pg.mouse.set_visible(False)
 
 
     def load_data(self):
@@ -33,7 +34,7 @@ class Game:
         self.score = 0
         self.sprites = pg.sprite.Group()  # all sprites
         self.player = pg.sprite.GroupSingle()
-        self.mobs = MobGroup()  # spritegroup sub class
+        self.mobs = MobGroup(self)  # spritegroup sub class
         self.bunkers = pg.sprite.Group()
         self.bullets = pg.sprite.Group()  # all bullets
         self.player_bullets = pg.sprite.Group()
@@ -77,7 +78,9 @@ class Game:
         if self.player.sprite.respawning:
             self.player.update()
             self.mobs.last_shot = pg.time.get_ticks()
+            self.sound_controller.dun_count = 0
         else:
+            self.sound_controller.music()
             self.sprites.update()
             self.mobs.update()
         # check if player gets hit by mobs or mob bullets
@@ -128,7 +131,7 @@ class Game:
         text(self.screen, style_numbers(self.score), SCORE_TEXT_SIZE, (WIDTH / 3, SCORE_VALUE_Y))
         text(self.screen, 'HI-SCORE', SCORE_TEXT_SIZE, (WIDTH / 1.5, SCORE_LABEL_Y))
         # text(self.screen, style_numbers(99999), SCORE_TEXT_SIZE, (WIDTH / 1.5, SCORE_VALUE_Y))
-        # self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
+        self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
         pg.display.flip()
 
 
@@ -155,7 +158,7 @@ class Game:
         text(self.screen, 'SHOOT WITH SPACE BAR', 30, (WIDTH / 2, HEIGHT * .75))
         text(self.screen, 'PRESS ANY KEY TO PLAY...', 30, (WIDTH / 2, HEIGHT * .75 + 30))
 
-        # self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
+        self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
         pg.display.flip()
         self.wait_for_key()
 

@@ -50,9 +50,24 @@ class SoundController:
     '''Utility class for loading and controlling sounds.'''
     def __init__(self, sound_name_list):
         self.effects = {}
+        self.last_dun = pg.time.get_ticks()
+        self.dun_count = 0
+        self.dundun_rate = DUNDUN_RATE
         for sound_name in sound_name_list:
             self.effects[sound_name] = pg.mixer.Sound(path.join(SOUND_DIR, sound_name+'.ogg'))
             self.effects[sound_name].set_volume(.5)
 
     def play_effect(self, effect):
         self.effects[effect].play()
+
+    def music(self):
+        now = pg.time.get_ticks()
+        if now - self.last_dun > self.dundun_rate:
+            if self.dun_count == 0:
+                self.effects['dun2'].play()
+            else:
+                self.effects['dun'].play()
+            self.dun_count += 1
+            if self.dun_count > 3:
+                self.dun_count = 0
+            self.last_dun = now
