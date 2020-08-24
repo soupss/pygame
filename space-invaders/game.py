@@ -32,6 +32,8 @@ class Game:
 
     def new(self):
         self.score = 0
+        self.level = 0
+        self.pre_wave_begin = None
         self.sprites = pg.sprite.Group()  # all sprites
         self.player = pg.sprite.GroupSingle()
         self.mobs = MobGroup(self)  # spritegroup sub class
@@ -40,18 +42,6 @@ class Game:
         self.player_bullets = pg.sprite.Group()
         self.mob_bullets = pg.sprite.Group()
         Player(self)
-        # spawn mobs
-        for col in range(self.mobs.cols):
-            for row in range(self.mobs.rows):
-                x = MOB_WIDTH * 1.5 * col + MOB_WIDTH
-                y = MOB_HEIGHT * 1.5 * row + MOB_START_Y
-                if row == 0:
-                    mob = Mob(self, x, y, 3)
-                if row == 1 or row == 2:
-                    mob = Mob(self, x, y, 2)
-                if row == 3 or row == 4:
-                    mob = Mob(self, x, y, 1)
-                self.mobs.colgroups[col].add(mob)
         # spawn bunkers
         for i in range(4):
             spacing = WIDTH / 5
@@ -65,22 +55,51 @@ class Game:
         while self.playing:
             self.clock.tick(FPS)
             self.events()
+            if not self.mobs:
+                self.wave(self.level)
             self.update()
             self.draw()
 
 
+    def wave(self, level):
+        self.pre_wave = True
+        if self.pre_wave_begin == None:
+            self.level += 1
+            self.pre_wave_begin = pg.time.get_ticks()
+        if self.pre_wave:
+            now = pg.time.get_ticks()
+            if now - self.pre_wave_begin > PRE_WAVE_TIME:
+                self.pre_wave = False
+                self.pre_wave_begin = None
+        if not self.pre_wave:
+            for col in range(self.mobs.cols):
+                for row in range(self.mobs.rows):
+                    x = MOB_WIDTH * 1.5 * col + MOB_WIDTH
+                    y = MOB_HEIGHT * 1.5 * row + MOB_START_Y
+                    if row == 0:
+                        mob = Mob(self, x, y, 3)
+                    if row == 1 or row == 2:
+                        mob = Mob(self, x, y, 2)
+                    if row == 3 or row == 4:
+                        mob = Mob(self, x, y, 1)
+                    self.mobs.colgroups[col].add(mob)
+
+
     def update(self):
-        for mob in self.mobs:
-            if mob.rect.y > HEIGHT:
-                self.playing = False
-        if self.player.sprite.lives == 0:
-            self.playing = False
+        # freeze when player is respawning
         if self.player.sprite.respawning:
             self.player.update()
             self.mobs.last_shot = pg.time.get_ticks()
             self.sound_controller.dun_count = 0
         else:
-            self.sound_controller.music()
+            # lose check
+            for mob in self.mobs:
+                if mob.rect.y > HEIGHT:
+                    self.playing = False
+            if self.player.sprite.lives == 0:
+                self.playing = False
+            if not self.pre_wave:
+                self.sound_controller.music()
             self.sprites.update()
             self.mobs.update()
         # check if player gets hit by mobs or mob bullets
@@ -122,6 +141,9 @@ class Game:
 
     def draw(self):
         self.screen.fill(BACKGROUND_COLOR)
+        if self.pre_wave:
+            text(self.screen, f'LEVEL {self.level}', 45, (WIDTH / 2, HEIGHT / 2))
+
         self.sprites.draw(self.screen)
         pg.draw.line(self.screen, WHITE, (0, TOP_SPACING), (WIDTH, TOP_SPACING), 3)
         pg.draw.line(self.screen, GREEN, (0, HEIGHT - BOT_SPACING), (WIDTH, HEIGHT - BOT_SPACING), 3)
@@ -154,13 +176,14 @@ class Game:
         self.screen.blit(alien1, alien1.get_rect(center=(WIDTH/3 + 20, HEIGHT / 2 + 75)))
         text(self.screen, '= 10 POINTS', 40, (WIDTH / 2 + 40, HEIGHT / 2 + 75))
 
-        text(self.screen, 'MOVE WITH ARROW KEYS', 30, (WIDTH / 2, HEIGHT * .75 - 30))
-        text(self.screen, 'SHOOT WITH SPACE BAR', 30, (WIDTH / 2, HEIGHT * .75))
-        text(self.screen, 'PRESS ANY KEY TO PLAY...', 30, (WIDTH / 2, HEIGHT * .75 + 30))
+        text(self.screen, '1.MOVE WITH ARROW KEYS', 30, (WIDTH / 2, HEIGHT * .75 - 30))
+        text(self.screen, '2.SHOOT WITH SPACE BAR', 30, (WIDTH / 2, HEIGHT * .75))
+        text(self.screen, 'PRESS ANY KEY TO PLAY...', 30, (WIDTH / 2 + 10, HEIGHT * .75 + 40))
 
         self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
         pg.display.flip()
         self.wait_for_key()
+
 
     def wait_for_key(self):
         waiting = True
@@ -170,16 +193,18 @@ class Game:
                 if event.type == pg.QUIT:
                     waiting = False
                     self.running = False
-                if event.type == pg.KEYDOWN:
-                    self.sound_controller.play_effect('select')
                 if event.type == pg.KEYUP:
-                    self.sound_controller.play_effect('select2')
                     waiting = False
 
 
     def gameover_screen(self):
-        pass
-
+        self.screen.fill(BACKGROUND_COLOR)
+        text(self.screen, 'GAME OVER', 55, (WIDTH / 2, HEIGHT / 3))
+        text(self.screen, f'SCORE = {self.score}', SCORE_TEXT_SIZE, (WIDTH / 2, HEIGHT / 2))
+        text(self.screen, 'PRESS ANY KEY TO PLAY AGAIN...', 30, (WIDTH / 2, HEIGHT / 1.5))
+        self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
+        pg.display.flip()
+        self.wait_for_key()
 
     def quit(self):
         self.playing = False

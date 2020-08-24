@@ -8,6 +8,7 @@ TITLE = 'Space Invaders'
 FPS = 60
 SPRITESHEET_NAME = 'spritesheet.png'
 FONT_NAME = 'bpdots.unicasesquare-bold.otf'
+PRE_WAVE_TIME = 3000
 
 # screen and game field properties
 WIDTH = 224 * 4  # 896
@@ -43,10 +44,14 @@ MOB_BULLET_HEIGHT = 28
 MOB_START_Y = TOP_SPACING + MOB_HEIGHT / 2 + 20
 
 # mob scaling
+# scales with enemy deaths
+# mob base speed is increased by 30% each level
+# mob speed scale is multiplied by mob deaths and added to base speed
 MOB_BASE_SPEED = .4
-MOB_SPEED_SCALE = .04
-MOB_BASE_FRAMERATE = 1000
-MOB_FRAMERATE_SCALE = -15
+MOB_SPEED_SCALE = .05
+# mob framerate increases with mob speed
+MOB_BASE_FRAMERATE = 1100
+MOB_FRAMERATE_SCALE = .2
 MOB_BASE_SHOOT_DELAY = 1500
 
 # bunker properties

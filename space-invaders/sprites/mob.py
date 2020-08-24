@@ -69,10 +69,11 @@ class MobGroup(pg.sprite.Group):
             self.colgroups.append(pg.sprite.Group())
         self.advance_frames = 0
         self.last_shot = pg.time.get_ticks()
+        self.shoot_delay = MOB_BASE_SHOOT_DELAY
 
     def shoot(self):
         now = pg.time.get_ticks()
-        if now - self.last_shot > MOB_BASE_SHOOT_DELAY:
+        if now - self.last_shot > self.shoot_delay:
             valid_shooters = []
             for cg in self.colgroups:
                 if not cg:
@@ -97,13 +98,22 @@ class MobGroup(pg.sprite.Group):
         # increase mob speed and frame rate when mobs die
         max = self.cols * self.rows
         dead = max - len(self.mobs)
-        speed = dead * MOB_SPEED_SCALE + MOB_BASE_SPEED
-        frame_rate = dead * MOB_FRAMERATE_SCALE + MOB_BASE_FRAMERATE
+        speed = dead * MOB_SPEED_SCALE + MOB_BASE_SPEED * (1 + (self.game.level - 1) * .3)
+        frame_rate = MOB_BASE_FRAMERATE - (MOB_BASE_FRAMERATE * speed * MOB_FRAMERATE_SCALE)
+        if self.game.level == 1:
+            shoot_delay = MOB_BASE_SHOOT_DELAY
+        else:
+            shoot_delay = MOB_BASE_SHOOT_DELAY - MOB_BASE_SHOOT_DELAY * self.game.level * 0.15
+        if frame_rate < 80:
+            frame_rate = 80
+        if shoot_delay < 300:
+            shoot_delay = 300
         for mob in self.mobs:
             mob.speed.x = speed
             mob.speed.y = speed
             mob.frame_rate = frame_rate
-        # music
+            self.shoot_delay = shoot_delay
+        # scale music tempo with speed
         self.game.sound_controller.dundun_rate = frame_rate
 
 
