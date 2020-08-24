@@ -1,11 +1,11 @@
-# Space Invader
+# Space Invaders
 
 ### Controls
 
 |  key | action          |
 |-----:|:----------------|
-|    h | move left       |
-|    l | move right      |
-|    z | shoot           |
-|   up | increase volume |
-| down | decrease volume |
+|    H | move left       |
+|    L | move right      |
+|    Z | shoot           |
+|   UP | increase volume |
+| DOWN | decrease volume |

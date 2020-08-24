@@ -1,72 +1,63 @@
+'''
+This module contains resource loading functions
+Also contains general tools which don't belong anywhere else
+'''
 # art made with https://www.piskelapp.com/
 # sound made with https://www.bfxr.net/
 from os import path
-import pygame
-from __main__ import BASE_DIR
+import pygame as pg
+from settings import *
 
-IMG_DIR = path.join(BASE_DIR, path.join('assets', 'img'))
-SND_DIR = path.join(BASE_DIR, path.join('assets', 'snd'))
+
+def text(screen, text, size, pos, color=WHITE):
+    font = pg.font.Font(path.join(FONT_DIR, FONT_NAME), size)
+    text_surface = font.render(text, False, color)
+    text_rect = text_surface.get_rect(center=pos)
+    screen.blit(text_surface, text_rect)
+
 
 def style_numbers(int):
-    s = str(int)
-    l = len(s)
-    if l != 5:
-        if l == 1:
-            s = '0000' + s
-        if l == 2:
-            s = '000' + s
-        if l == 3:
-            s = '00' + s
-        if l == 4:
-            s = '0' + s
-    return s
+    string = str(int)
+    if len(string) != 5:
+        if len(string) == 1:
+            string = '0000' + string
+        if len(string) == 2:
+            string = '000' + string
+        if len(string) == 3:
+            string = '00' + string
+        if len(string) == 4:
+            string = '0' + string
+    return string
 
 
-class Images:
-    def __init__(self, image_name_list):
-        self.images = {}
-        for image_name in image_name_list:
-            self.images[image_name] = pygame.image.load(path.join(IMG_DIR, image_name+'.png'))
+class SpriteSheet:
+    '''Utility class for loading and parsing spritesheets.'''
+    def __init__(self, filename):
+        self.spritesheet = pg.image.load(filename).convert()
 
-    def get(self, name, color):
-        image = self.images[name]
-        color_image = pygame.Surface(image.get_size()).convert_alpha()
+    def get_image(self, x, y, width, height, color):
+        '''Change color and return a single image.'''
+        image = pg.Surface((width, height))
+        image.blit(self.spritesheet, (0, 0), (x, y, width, height))
+        color_image = pg.Surface(image.get_size()).convert_alpha()
         color_image.fill(color)
-        image.blit(color_image, (0,0), special_flags = pygame.BLEND_RGBA_MIN)
+        image.blit(color_image, (0,0), special_flags = pg.BLEND_RGBA_MIN)
+        image.set_colorkey(BLACK)
         return image
 
 
-class Sound:
+class SoundController:
+    '''Utility class for loading and controlling sounds.'''
     def __init__(self, sound_name_list):
-        self.sounds = {}
+        self.effects = {}
         for sound_name in sound_name_list:
-            self.sounds[sound_name] = pygame.mixer.Sound(path.join(SND_DIR, sound_name+'.ogg'))
-            self.sounds[sound_name].set_volume(.5)
+            self.effects[sound_name] = pg.mixer.Sound(path.join(SOUND_DIR, sound_name+'.ogg'))
+            self.effects[sound_name].set_volume(.5)
 
     def volume_up(self):
-        for sound in self.sounds.values():
+        for sound in self.effects.values():
             sound.set_volume(sound.get_volume() + .1)
 
     def volume_down(self):
-        for sound in self.sounds.values():
+        for sound in self.effects.values():
             sound.set_volume(sound.get_volume() - .1)
-
-
-image_names = [
-    'ship', 'bunker',
-    'alien1', 'alien2', 'alien3',
-    'player_bullet'
-]
-
-print('loading sprite image files...')
-IMG = Images(image_names)
-print('all sprite image files loaded')
-
-sound_names = [
-    'shoot', 'score', 'die',
-    'select', 'select2', 'explosion'
-]
-
-print('loading sound files...')
-SND = Sound(sound_names)
-print('all sound files loaded')

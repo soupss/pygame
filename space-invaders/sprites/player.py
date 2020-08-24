@@ -1,68 +1,80 @@
-import pygame
-from pygame.math import Vector2
-from __main__ import WIDTH, HEIGHT, GREEN, screen
-from tools import IMG, SND
+import pygame as pg
+from settings import *
 from sprites.bullet import PlayerBullet as Bullet
 
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image_base = IMG.get('ship', GREEN)
-        self.image = self.image_base
-        self.rect = self.image.get_rect()
-        self.rect.centerx = WIDTH / 2
-        self.rect.bottom = HEIGHT - 80
-        self.mask = pygame.mask.from_surface(self.image)
-        self.speedx = 0
-        self.lives = 3
-        self.bullets = pygame.sprite.Group()
-        self.SHOOT_DELAY = 500
-        self.last_shot_time = pygame.time.get_ticks() - self.SHOOT_DELAY
+class Player(pg.sprite.Sprite):
+    def __init__(self, game):
+        self.game = game
+        self.groups = self.game.sprites, self.game.player
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.load_images()
+        self.frame = 0
+        self.image = self.frame_alive
+        self.rect = self.image.get_rect(center=(WIDTH / 2, PLAYER_Y))
+        self.last_shot = pg.time.get_ticks() - PLAYER_SHOOT_DELAY
+        self.lives = PLAYER_STARTING_LIVES
         self.respawning = False
-        self.death_time = pygame.time.get_ticks()
-        self.respawn_timer = 1500  # time
+        self.last_updated = pg.time.get_ticks()
+
+    def load_images(self):
+        self.frame_alive = self.game.spritesheet.get_image(0, 0, 60, 32, GREEN)
+        self.frames_exploded = [
+            self.game.spritesheet.get_image(0, 32, 60, 32, GREEN),
+            self.game.spritesheet.get_image(60, 32, 60, 32, GREEN)
+        ]
+
 
     def shoot(self):
-        SND.sounds['shoot'].play()
-        self.bullets.add(Bullet(self.rect.centerx, self.rect.top))
+        now = pg.time.get_ticks()
+        if now - self.last_shot > PLAYER_SHOOT_DELAY:
+            self.last_shot = now
+            Bullet(self.game, self.rect.centerx, self.rect.top)
+            self.game.sound_controller.effects['shoot'].play()
 
-    def die(self, time_died):
-        SND.sounds['die'].play()
+    def die(self):
         self.lives -= 1
+        self.time_died = pg.time.get_ticks()
         self.respawning = True
-        self.death_time = pygame.time.get_ticks()
+        self.game.sound_controller.effects['die'].play()
 
-    def draw_lives(self):
-        offset = Vector2(250, 30)
-        spacing = 55
-        heart_image = self.image_base
-        for l in range(self.lives - 1):
-            screen.blit(heart_image, heart_image.get_rect(center = (l * spacing + offset.x, HEIGHT - offset.y)))
+    def draw_lives(self, screen):
+        image_small = pg.transform.scale(self.frame_alive, (45, 25))
+        offset = (BOT_SPACING - image_small.get_height()) / 2
+        spacing = image_small.get_width() + 15
+        for life in range(self.lives):
+            screen.blit(image_small, image_small.get_rect(left=life * spacing + offset, bottom=HEIGHT-offset))
+
 
     def update(self):
         if self.respawning:
-            self.image = pygame.Surface((self.rect.size), pygame.SRCALPHA)
-            self.image = self.image.convert_alpha()
-            current_time = pygame.time.get_ticks()
-            if current_time - self.death_time > self.respawn_timer:
-                self.image = self.image_base
+            now = pg.time.get_ticks()
+            if now - self.time_died > PLAYER_RESPAWN_RATE:
                 self.rect.centerx = WIDTH / 2
+                self.image = self.frame_alive
                 self.respawning = False
+            elif now - self.time_died > PLAYER_RESPAWN_RATE / 3:
+                self.image = pg.Surface((self.rect.size), pg.SRCALPHA)
+                self.image = self.image.convert_alpha()
+            else:
+                # update exploded frame
+                if now - self.last_updated > PLAYER_EXPLODE_FRAME_RATE:
+                    self.frame += 1
+                    if self.frame == len(self.frames_exploded):
+                        self.frame = 0
+                    self.image = self.frames_exploded[self.frame]
+                    self.last_updated = now
         else:
             self.speedx = 0
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_h]:
-                self.speedx = -4
-            if keys[pygame.K_l]:
-                self.speedx = 4
-            if keys[pygame.K_z]:
-                current_time = pygame.time.get_ticks()
-                if current_time - self.last_shot_time > self.SHOOT_DELAY:
-                    self.shoot()
-                    self.last_shot_time = current_time
+            keys = pg.key.get_pressed()
+            if keys[pg.K_h]:
+                self.speedx = -PLAYER_SPEED
+            if keys[pg.K_l]:
+                self.speedx = PLAYER_SPEED
+            if keys[pg.K_z]:
+                self.shoot()
             self.rect.x += self.speedx
-            if self.rect.right > WIDTH:
+            if self.rect.right >= WIDTH:
                 self.rect.right = WIDTH
-            elif self.rect.left < 0:
+            elif self.rect.left <= 0:
                 self.rect.left = 0
