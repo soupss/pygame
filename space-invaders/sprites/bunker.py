@@ -9,3 +9,4 @@ class Bunker(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.image = self.game.spritesheet.get_image(0, 64, 88, 64, GREEN)
         self.rect = self.image.get_rect(topleft=(x, y))
+        self.mask = pg.mask.from_surface(self.image)

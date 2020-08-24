@@ -11,6 +11,7 @@ class Player(pg.sprite.Sprite):
         self.load_images()
         self.frame = 0
         self.image = self.frame_alive
+        self.mask = pg.mask.from_surface(self.image)
         self.rect = self.image.get_rect(center=(WIDTH / 2, PLAYER_Y))
         self.last_shot = pg.time.get_ticks() - PLAYER_SHOOT_DELAY
         self.lives = PLAYER_STARTING_LIVES
@@ -30,13 +31,13 @@ class Player(pg.sprite.Sprite):
         if now - self.last_shot > PLAYER_SHOOT_DELAY:
             self.last_shot = now
             Bullet(self.game, self.rect.centerx, self.rect.top)
-            self.game.sound_controller.effects['shoot'].play()
+            self.game.sound_controller.play_effect('shoot')
 
     def die(self):
         self.lives -= 1
         self.time_died = pg.time.get_ticks()
         self.respawning = True
-        self.game.sound_controller.effects['die'].play()
+        self.game.sound_controller.play_effect('die')
 
     def draw_lives(self, screen):
         image_small = pg.transform.scale(self.frame_alive, (45, 25))

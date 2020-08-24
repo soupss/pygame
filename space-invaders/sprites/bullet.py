@@ -15,6 +15,7 @@ class PlayerBullet(Bullet):
         Bullet.__init__(self, self.groups)
         self.image = self.game.spritesheet.get_image(60, 0, 4, 16, GREEN)
         self.rect = self.image.get_rect(center=(x, y + PLAYER_BULLET_HEIGHT))
+        self.mask = pg.mask.from_surface(self.image)
 
     def update(self):
         if self.rect.top < TOP_SPACING:
@@ -49,6 +50,7 @@ class MobBullet(Bullet):
                 self.frame = 0
             self.image = self.frames[self.frame]
             self.last_updated = now
+        self.mask = pg.mask.from_surface(self.image)
 
     def update(self):
         if self.rect.bottom > HEIGHT - BOT_SPACING:

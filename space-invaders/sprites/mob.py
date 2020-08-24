@@ -46,6 +46,7 @@ class Mob(pg.sprite.Sprite):
                 self.frame = 0
             self.last_updated = now
             self.image = self.frames[self.frame]
+        self.mask = pg.mask.from_surface(self.image)
 
     def shoot(self):
         Bullet(self.game, self.rect.centerx, self.rect.bottom)

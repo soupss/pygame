@@ -81,29 +81,29 @@ class Game:
             self.sprites.update()
             self.mobs.update()
         # check if player gets hit by mobs or mob bullets
-        player_hit_mobs = pg.sprite.spritecollide(self.player.sprite, self.mobs, True)
-        player_hit_mob_bullets = pg.sprite.spritecollide(self.player.sprite, self.mob_bullets, True)
+        player_hit_mobs = pg.sprite.spritecollide(self.player.sprite, self.mobs, True, pg.sprite.collide_mask)
+        player_hit_mob_bullets = pg.sprite.spritecollide(self.player.sprite, self.mob_bullets, True, pg.sprite.collide_mask)
         if player_hit_mobs or player_hit_mob_bullets:
             self.player.sprite.die()
             for bullet in self.bullets:
                 bullet.kill()
         # check if player bullets hit mobs
-        player_bullets_hit_mobs = pg.sprite.groupcollide(self.player_bullets, self.mobs, True, True)
+        player_bullets_hit_mobs = pg.sprite.groupcollide(self.player_bullets, self.mobs, True, True, pg.sprite.collide_mask)
         for mobs in player_bullets_hit_mobs.values():
             for mob in mobs:
                 Explosion(self, mob.rect.center)
                 self.score += mob.type * 10
-                self.sound_controller.effects['score'].play()
+                self.sound_controller.play_effect('score')
         # check if player bullets hit mob bullets
-        player_bullets_hit_mob_bullets = pg.sprite.groupcollide(self.player_bullets, self.mob_bullets, True, True)
+        player_bullets_hit_mob_bullets = pg.sprite.groupcollide(self.player_bullets, self.mob_bullets, True, True, pg.sprite.collide_mask)
         for mob_bullets in player_bullets_hit_mob_bullets.values():
             for bullet in mob_bullets:
                 Explosion(self, bullet.rect.center, True)
         # check if something hit bunkers
-        bunkers_hit_bullets = pg.sprite.groupcollide(self.bunkers, self.bullets, False, True)
-        bunkers_hit_mobs = pg.sprite.groupcollide(self.bunkers, self.mobs, True, False)
+        bunkers_hit_bullets = pg.sprite.groupcollide(self.bunkers, self.bullets, False, True, pg.sprite.collide_mask)
+        bunkers_hit_mobs = pg.sprite.groupcollide(self.bunkers, self.mobs, True, False, pg.sprite.collide_mask)
         if bunkers_hit_mobs:
-            self.sound_controller.effects['explosion'].play()
+            self.sound_controller.play_effect('explosion')
         for mobs in bunkers_hit_mobs.values():
             mobs[0].kill()
 
