@@ -8,4 +8,4 @@
 |               LEFT | move left     |
 |               RIGHT| move right    |
 |               SPACE| shoot         |
-|            Q / ESC | quit          |
+|                ESC | quit          |
