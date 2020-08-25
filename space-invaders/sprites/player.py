@@ -74,6 +74,8 @@ class Player(pg.sprite.Sprite):
                 self.speedx = PLAYER_SPEED
             if keys[pg.K_z] or keys[pg.K_SPACE]:
                 self.shoot()
+            if keys[pg.K_0]:
+                self.lives -= 1
             self.rect.x += self.speedx
             if self.rect.right >= WIDTH:
                 self.rect.right = WIDTH

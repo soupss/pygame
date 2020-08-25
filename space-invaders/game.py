@@ -94,7 +94,7 @@ class Game:
         else:
             # lose check
             for mob in self.mobs:
-                if mob.rect.y > HEIGHT:
+                if mob.rect.y > HEIGHT - BOT_SPACING:
                     self.playing = False
             if self.player.sprite.lives == 0:
                 self.playing = False
@@ -102,6 +102,7 @@ class Game:
                 self.sound_controller.music()
             self.sprites.update()
             self.mobs.update()
+
         # check if player gets hit by mobs or mob bullets
         player_hit_mobs = pg.sprite.spritecollide(self.player.sprite, self.mobs, True, pg.sprite.collide_mask)
         player_hit_mob_bullets = pg.sprite.spritecollide(self.player.sprite, self.mob_bullets, True, pg.sprite.collide_mask)
@@ -109,6 +110,7 @@ class Game:
             self.player.sprite.die()
             for bullet in self.bullets:
                 bullet.kill()
+
         # check if player bullets hit mobs
         player_bullets_hit_mobs = pg.sprite.groupcollide(self.player_bullets, self.mobs, True, True, pg.sprite.collide_mask)
         for mobs in player_bullets_hit_mobs.values():
@@ -116,11 +118,13 @@ class Game:
                 Explosion(self, mob.rect.center)
                 self.score += mob.type * 10
                 self.sound_controller.play_effect('score')
+
         # check if player bullets hit mob bullets
         player_bullets_hit_mob_bullets = pg.sprite.groupcollide(self.player_bullets, self.mob_bullets, True, True, pg.sprite.collide_mask)
         for mob_bullets in player_bullets_hit_mob_bullets.values():
             for bullet in mob_bullets:
                 Explosion(self, bullet.rect.center, True)
+
         # check if something hit bunkers
         bunkers_hit_bullets = pg.sprite.groupcollide(self.bunkers, self.bullets, False, True, pg.sprite.collide_mask)
         bunkers_hit_mobs = pg.sprite.groupcollide(self.bunkers, self.mobs, True, False, pg.sprite.collide_mask)
@@ -143,7 +147,6 @@ class Game:
         self.screen.fill(BACKGROUND_COLOR)
         if self.pre_wave:
             text(self.screen, f'LEVEL {self.level}', 45, (WIDTH / 2, HEIGHT / 2))
-
         self.sprites.draw(self.screen)
         pg.draw.line(self.screen, WHITE, (0, TOP_SPACING), (WIDTH, TOP_SPACING), 3)
         pg.draw.line(self.screen, GREEN, (0, HEIGHT - BOT_SPACING), (WIDTH, HEIGHT - BOT_SPACING), 3)
@@ -157,9 +160,24 @@ class Game:
         pg.display.flip()
 
 
-    def quit(self):
-        self.playing = False
-        self.running = False
+    def start_screen(self):
+        def play():
+            pass
+        def quit():
+            self.quit()
+        start_menu_dict = {
+            'PLAY': play,
+            'QUIT': quit
+        }
+        start_menu = Menu(self, start_menu_dict, 50, HEIGHT / 2)
+        while start_menu.waiting and self.running:
+            start_menu.update()
+            self.screen.fill(BACKGROUND_COLOR)
+            start_menu.draw(self.screen)
+            text(self.screen, 'SPACE', 160, (WIDTH / 2, HEIGHT / 4))
+            text(self.screen, 'INVADERS', 100, (WIDTH / 2, HEIGHT / 4 + 80))
+            self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
+            pg.display.flip()
 
 
     def gameover_screen(self):
@@ -174,30 +192,14 @@ class Game:
         gameover_menu = Menu(self, gameover_menu_dict, 50, HEIGHT / 2)
         while gameover_menu.waiting and self.running:
             gameover_menu.update()
-
             self.screen.fill(BACKGROUND_COLOR)
             gameover_menu.draw(self.screen)
-            text(self.screen, 'GAME OVER', 55, (WIDTH / 2, HEIGHT / 4))
-            text(self.screen, f'SCORE = {self.score}', SCORE_TEXT_SIZE, (WIDTH / 2, HEIGHT / 3))
+            text(self.screen, 'GAME OVER', 85, (WIDTH / 2, HEIGHT / 4 - 10))
+            text(self.screen, f'SCORE {style_numbers(self.score)}', 50, (WIDTH / 2, HEIGHT / 3))
             self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
             pg.display.flip()
 
-    def start_screen(self):
-        def play():
-            pass
-        def quit():
-            self.quit()
-        start_menu_dict = {
-            'PLAY': play,
-            'QUIT': quit
-        }
-        start_menu = Menu(self, start_menu_dict, 50, HEIGHT / 2)
-        while start_menu.waiting and self.running:
-            start_menu.update()
 
-            self.screen.fill(BACKGROUND_COLOR)
-            start_menu.draw(self.screen)
-            text(self.screen, 'SPACE', 160, (WIDTH / 2, HEIGHT / 4))
-            text(self.screen, 'INVADERS', 100, (WIDTH / 2, HEIGHT / 4 + 80))
-            self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
-            pg.display.flip()
+    def quit(self):
+        self.playing = False
+        self.running = False
