@@ -2,7 +2,7 @@ import os
 from os import path
 import pygame as pg
 from settings import *
-from tools import SpriteSheet, SoundController, text, style_numbers
+from tools import SpriteSheet, Menu, SoundController, text, style_numbers
 from sprites.player import Player
 from sprites.mob import MobGroup, Mob
 from sprites.bunker import Bunker
@@ -157,55 +157,47 @@ class Game:
         pg.display.flip()
 
 
-    def start_screen(self):
-        if not self.running:
-            return
-        self.screen.fill(BACKGROUND_COLOR)
-        text(self.screen, 'SPACE', 160, (WIDTH / 2, HEIGHT / 4 - 40), GREEN)
-        text(self.screen, 'INVADERS', 100, (WIDTH / 2, HEIGHT / 4 + 40), GREEN)
-        alien1 = self.spritesheet.get_image(48, 128, 48, 32, WHITE)
-        alien2 = self.spritesheet.get_image(48, 160, 44, 32, WHITE)
-        alien3 = self.spritesheet.get_image(48, 192, 32, 32, WHITE)
-
-        self.screen.blit(alien3, alien3.get_rect(center=(WIDTH/3 + 20, HEIGHT / 2 - 25)))
-        text(self.screen, '= 30 POINTS', 40, (WIDTH / 2 + 40, HEIGHT / 2 - 25))
-
-        self.screen.blit(alien2, alien2.get_rect(center=(WIDTH/3 + 20, HEIGHT / 2 + 25)))
-        text(self.screen, '= 20 POINTS', 40, (WIDTH / 2 + 40, HEIGHT / 2 + 25))
-
-        self.screen.blit(alien1, alien1.get_rect(center=(WIDTH/3 + 20, HEIGHT / 2 + 75)))
-        text(self.screen, '= 10 POINTS', 40, (WIDTH / 2 + 40, HEIGHT / 2 + 75))
-
-        text(self.screen, '1.MOVE WITH ARROW KEYS', 30, (WIDTH / 2, HEIGHT * .75 - 30))
-        text(self.screen, '2.SHOOT WITH SPACE BAR', 30, (WIDTH / 2, HEIGHT * .75))
-        text(self.screen, 'PRESS ANY KEY TO PLAY...', 30, (WIDTH / 2 + 10, HEIGHT * .75 + 40))
-
-        self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
-        pg.display.flip()
-        self.wait_for_key()
-
-
-    def wait_for_key(self):
-        waiting = True
-        while waiting:
-            self.clock.tick(FPS)
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    waiting = False
-                    self.running = False
-                if event.type == pg.KEYUP:
-                    waiting = False
-
-
-    def gameover_screen(self):
-        self.screen.fill(BACKGROUND_COLOR)
-        text(self.screen, 'GAME OVER', 55, (WIDTH / 2, HEIGHT / 3))
-        text(self.screen, f'SCORE = {self.score}', SCORE_TEXT_SIZE, (WIDTH / 2, HEIGHT / 2))
-        text(self.screen, 'PRESS ANY KEY TO PLAY AGAIN...', 30, (WIDTH / 2, HEIGHT / 1.5))
-        self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
-        pg.display.flip()
-        self.wait_for_key()
-
     def quit(self):
         self.playing = False
         self.running = False
+
+
+    def gameover_screen(self):
+        def play_again():
+            pass
+        def quit():
+            self.quit()
+        gameover_menu_dict = {
+            'PLAY AGAIN': play_again,
+            'QUIT': quit
+        }
+        gameover_menu = Menu(self, gameover_menu_dict, 50, HEIGHT / 2)
+        while gameover_menu.waiting and self.running:
+            gameover_menu.update()
+
+            self.screen.fill(BACKGROUND_COLOR)
+            gameover_menu.draw(self.screen)
+            text(self.screen, 'GAME OVER', 55, (WIDTH / 2, HEIGHT / 4))
+            text(self.screen, f'SCORE = {self.score}', SCORE_TEXT_SIZE, (WIDTH / 2, HEIGHT / 3))
+            self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
+            pg.display.flip()
+
+    def start_screen(self):
+        def play():
+            pass
+        def quit():
+            self.quit()
+        start_menu_dict = {
+            'PLAY': play,
+            'QUIT': quit
+        }
+        start_menu = Menu(self, start_menu_dict, 50, HEIGHT / 2)
+        while start_menu.waiting and self.running:
+            start_menu.update()
+
+            self.screen.fill(BACKGROUND_COLOR)
+            start_menu.draw(self.screen)
+            text(self.screen, 'SPACE', 160, (WIDTH / 2, HEIGHT / 4))
+            text(self.screen, 'INVADERS', 100, (WIDTH / 2, HEIGHT / 4 + 80))
+            self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
+            pg.display.flip()

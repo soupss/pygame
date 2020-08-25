@@ -30,6 +30,70 @@ def style_numbers(int):
     return string
 
 
+class Menu:
+    '''Creates a menu from given labels and functions.
+
+    example dict:
+        menu_dict = {
+            'play': None,
+            'options': self.options,
+            'quit': self.quit
+        }
+    '''
+    def __init__(self, game, dict, text_size, start_y):
+        self.game = game
+        self.waiting = True
+        self.dict = dict
+        self.options = list(self.dict.keys())
+        self.selected = 0
+        self.text_size = text_size
+        self.start_y = start_y
+
+    def select_next(self):
+        self.selected += 1
+        if self.selected == len(self.dict):
+            self.selected = 0
+
+    def select_prev(self):
+        self.selected -= 1
+        if self.selected < 0:
+            self.selected = len(self.dict) - 1
+
+    def events(self):
+        self.game.clock.tick(FPS)
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.game.quit()
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_q or event.key == pg.K_ESCAPE:
+                    self.waiting = False
+                    self.game.quit()
+                if event.key == pg.K_j or event.key == pg.K_DOWN:
+                    self.select_next()
+                    self.game.sound_controller.play_effect('select')
+                if event.key == pg.K_k or event.key == pg.K_UP:
+                    self.select_prev()
+                    self.game.sound_controller.play_effect('select')
+                if event.key == pg.K_RETURN:
+                    # call dict value function if it isnt set to None
+                    if self.dict[self.options[self.selected]]:
+                        # exit menu when option selected
+                        self.waiting = False
+                        self.dict[self.options[self.selected]]()
+                    self.game.sound_controller.play_effect('select2')
+
+    def update(self):
+        self.events()
+
+    def draw(self, screen):
+        spacing = 100
+        for i, (label, action) in enumerate(self.dict.items()):
+            if i == self.selected:
+                text(screen, label, self.text_size, (WIDTH / 2, i * spacing + self.start_y), GREEN)
+            else:
+                text(screen, label, self.text_size, (WIDTH / 2, i * spacing + self.start_y), WHITE)
+
+
 class SpriteSheet:
     '''Utility class for loading and parsing spritesheets.'''
     def __init__(self, filename):
