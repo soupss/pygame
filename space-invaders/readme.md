@@ -2,10 +2,10 @@
 
 ### Controls
 
-|  key | action          |
-|-----:|:----------------|
-|    H | move left       |
-|    L | move right      |
-|    Z | shoot           |
-|   UP | increase volume |
-| DOWN | decrease volume |
+|                key | action        |
+|-------------------:|:--------------|
+| ARROW KEYS + ENTER | menu movement |
+|               LEFT | move left     |
+|               RIGHT| move right    |
+|               SPACE| shoot         |
+|                ESC | quit          |
