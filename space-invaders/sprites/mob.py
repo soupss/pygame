@@ -98,7 +98,13 @@ class MobGroup(pg.sprite.Group):
         # increase mob speed and frame rate when mobs die
         max = self.cols * self.rows
         dead = max - len(self.mobs)
-        speed = dead * MOB_SPEED_SCALE + MOB_BASE_SPEED * (1 + (self.game.level - 1) * .3)
+        # base speed starts low and increases with level
+        base_speed = MOB_BASE_SPEED * self.game.level
+        # exp_func = 0.1 * 1.06(level) ^ dead
+        # level 1 = 1.061
+        # level 2 = 1.062 etc.
+        exp_func = MOB_SPEED_SCALE * (MOB_SPEED_SCALE_EXP + self.game.level / 1000) ** dead
+        speed = exp_func + base_speed
         frame_rate = MOB_BASE_FRAMERATE - (MOB_BASE_FRAMERATE * speed * MOB_FRAMERATE_SCALE)
         if self.game.level == 1:
             shoot_delay = MOB_BASE_SHOOT_DELAY

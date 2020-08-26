@@ -47,8 +47,9 @@ MOB_START_Y = TOP_SPACING + MOB_HEIGHT / 2 + 20
 # scales with enemy deaths
 # mob base speed is increased by 30% each level
 # mob speed scale is multiplied by mob deaths and added to base speed
-MOB_BASE_SPEED = .4
-MOB_SPEED_SCALE = .05
+MOB_BASE_SPEED = .2
+MOB_SPEED_SCALE = .1
+MOB_SPEED_SCALE_EXP = 1.06
 # mob framerate increases with mob speed
 MOB_BASE_FRAMERATE = 1100
 MOB_FRAMERATE_SCALE = .2
