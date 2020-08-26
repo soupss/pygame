@@ -145,19 +145,25 @@ class Game:
 
     def draw(self):
         self.screen.fill(BACKGROUND_COLOR)
-        if self.pre_wave:
-            text(self.screen, f'LEVEL {self.level}', 45, (WIDTH / 2, HEIGHT / 2))
         self.sprites.draw(self.screen)
+        self.show_game_data()
+        self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
+        pg.display.flip()
+
+
+    def show_game_data(self):
+        # if self.pre_wave:
+        #     text(self.screen, f'LEVEL {self.level}', 45, (WIDTH / 2, HEIGHT / 2))
         pg.draw.line(self.screen, WHITE, (0, TOP_SPACING), (WIDTH, TOP_SPACING), 3)
         pg.draw.line(self.screen, GREEN, (0, HEIGHT - BOT_SPACING), (WIDTH, HEIGHT - BOT_SPACING), 3)
         self.player.sprite.draw_lives(self.screen)
-        # display score
         text(self.screen, 'SCORE', SCORE_TEXT_SIZE, (WIDTH / 3, SCORE_LABEL_Y))
-        text(self.screen, style_numbers(self.score), SCORE_TEXT_SIZE, (WIDTH / 3, SCORE_VALUE_Y))
-        text(self.screen, 'HI-SCORE', SCORE_TEXT_SIZE, (WIDTH / 1.5, SCORE_LABEL_Y))
-        # text(self.screen, style_numbers(99999), SCORE_TEXT_SIZE, (WIDTH / 1.5, SCORE_VALUE_Y))
-        self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
-        pg.display.flip()
+        text(self.screen, str(self.score), SCORE_TEXT_SIZE, (WIDTH / 3, SCORE_VALUE_Y))
+        text(self.screen, 'LEVEL', SCORE_TEXT_SIZE, (WIDTH / 1.5, SCORE_LABEL_Y))
+        if self.pre_wave:
+            text(self.screen, str(self.level), SCORE_TEXT_SIZE, (WIDTH / 1.5, SCORE_VALUE_Y), GREEN)
+        else:
+            text(self.screen, str(self.level), SCORE_TEXT_SIZE, (WIDTH / 1.5, SCORE_VALUE_Y))
 
 
     def start_screen(self):

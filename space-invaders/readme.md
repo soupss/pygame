@@ -1,6 +1,6 @@
-# Space Invaders
+## space invaders
 
-### Controls
+#### controls
 
 |                key | action        |
 |-------------------:|:--------------|
