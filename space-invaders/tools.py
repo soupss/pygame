@@ -5,8 +5,10 @@ Also contains general tools which don't belong anywhere else
 # art made with https://www.piskelapp.com/
 # sound made with https://www.bfxr.net/
 from os import path
+from random import randrange
 import pygame as pg
 from settings import *
+from sprites.mob import Mob
 
 
 def text(screen, text, size, pos, color=WHITE):
@@ -14,6 +16,7 @@ def text(screen, text, size, pos, color=WHITE):
     text_surface = font.render(text, False, color)
     text_rect = text_surface.get_rect(center=pos)
     screen.blit(text_surface, text_rect)
+    return text_surface
 
 
 def style_numbers(int):
@@ -48,6 +51,9 @@ class Menu:
         self.selected = 0
         self.text_size = text_size
         self.start_y = start_y
+        Mob.load_images(self, GREEN)
+        self.icons = self.images[randrange(len(self.images))]
+        self.icon = self.icons[0]
 
     def select_next(self):
         self.selected += 1
@@ -75,12 +81,15 @@ class Menu:
                     self.select_prev()
                     self.game.sound_controller.play_effect('select')
                 if event.key == pg.K_RETURN:
+                    self.icon = self.icons[1]
+                    self.game.sound_controller.play_effect('select2')
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_RETURN:
                     # call dict value function if it isnt set to None
                     if self.dict[self.options[self.selected]]:
                         # exit menu when option selected
                         self.waiting = False
                         self.dict[self.options[self.selected]]()
-                    self.game.sound_controller.play_effect('select2')
 
     def update(self):
         self.events()
@@ -89,7 +98,8 @@ class Menu:
         spacing = 100
         for i, (label, action) in enumerate(self.dict.items()):
             if i == self.selected:
-                text(screen, label, self.text_size, (WIDTH / 2, i * spacing + self.start_y), GREEN)
+                text_surf = text(screen, label, self.text_size, (WIDTH / 2, i * spacing + self.start_y), GREEN)
+                screen.blit(self.icon, (WIDTH / 2 - text_surf.get_width() / 2 - 70, i * spacing + self.start_y - self.icon.get_height() / 3 + 5))
             else:
                 text(screen, label, self.text_size, (WIDTH / 2, i * spacing + self.start_y), WHITE)
 

@@ -11,7 +11,7 @@ class Mob(pg.sprite.Sprite):
         self.groups = self.game.sprites, self.game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
         self.type = type
-        self.load_images()
+        self.load_images(WHITE)
         self.frames = self.images[self.type - 1]
         self.frame = 0
         self.image = self.frames[self.frame]
@@ -22,19 +22,20 @@ class Mob(pg.sprite.Sprite):
         self.frame_rate = MOB_BASE_FRAMERATE
         self.last_updated = pg.time.get_ticks()
 
-    def load_images(self):
+    @staticmethod
+    def load_images(self, color):
         self.images = [
             [
-                self.game.spritesheet.get_image(0, 128, 48, 32, WHITE),
-                self.game.spritesheet.get_image(48, 128, 48, 32, WHITE)
+                self.game.spritesheet.get_image(0, 128, 48, 32, color),
+                self.game.spritesheet.get_image(48, 128, 48, 32, color)
             ],
             [
-                self.game.spritesheet.get_image(0, 160, 44, 32, WHITE),
-                self.game.spritesheet.get_image(48, 160, 44, 32, WHITE)
+                self.game.spritesheet.get_image(0, 160, 44, 32, color),
+                self.game.spritesheet.get_image(48, 160, 44, 32, color)
             ],
             [
-                self.game.spritesheet.get_image(0, 192, 32, 32, WHITE),
-                self.game.spritesheet.get_image(48, 192, 32, 32, WHITE)
+                self.game.spritesheet.get_image(0, 192, 32, 32, color),
+                self.game.spritesheet.get_image(48, 192, 32, 32, color)
             ],
         ]
 
