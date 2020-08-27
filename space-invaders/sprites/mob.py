@@ -11,7 +11,7 @@ class Mob(pg.sprite.Sprite):
         self.groups = self.game.sprites, self.game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
         self.type = type
-        self.load_images(WHITE)
+        self.load_images(self, WHITE)
         self.frames = self.images[self.type - 1]
         self.frame = 0
         self.image = self.frames[self.frame]

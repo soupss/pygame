@@ -13,10 +13,10 @@ class Game:
     def __init__(self):
         pg.mixer.pre_init(44100, -16, 1, 512)
         pg.init()
-        self.backscreen = pg.display.set_mode((0, 0), flags=pg.FULLSCREEN)
-        self.backscreen.fill(BACKSCREEN_COLOR)
-        self.screen = pg.Surface((WIDTH, HEIGHT))
-        # self.screen = pg.display.set_mode((WIDTH, HEIGHT))
+        # self.backscreen = pg.display.set_mode((0, 0), flags=pg.FULLSCREEN)
+        # self.backscreen.fill(BACKSCREEN_COLOR)
+        # self.screen = pg.Surface((WIDTH, HEIGHT))
+        self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.load_data()
@@ -147,23 +147,20 @@ class Game:
         self.screen.fill(BACKGROUND_COLOR)
         self.sprites.draw(self.screen)
         self.show_game_data()
-        self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
+        # self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
         pg.display.flip()
 
 
     def show_game_data(self):
-        # if self.pre_wave:
-        #     text(self.screen, f'LEVEL {self.level}', 45, (WIDTH / 2, HEIGHT / 2))
+        if self.pre_wave:
+            text(self.screen, f'LEVEL {self.level}', 45, (WIDTH / 2, HEIGHT / 2))
         pg.draw.line(self.screen, WHITE, (0, TOP_SPACING), (WIDTH, TOP_SPACING), 3)
         pg.draw.line(self.screen, GREEN, (0, HEIGHT - BOT_SPACING), (WIDTH, HEIGHT - BOT_SPACING), 3)
         self.player.sprite.draw_lives(self.screen)
         text(self.screen, 'SCORE', SCORE_TEXT_SIZE, (WIDTH / 3, SCORE_LABEL_Y))
         text(self.screen, str(self.score), SCORE_TEXT_SIZE, (WIDTH / 3, SCORE_VALUE_Y))
         text(self.screen, 'LEVEL', SCORE_TEXT_SIZE, (WIDTH / 1.5, SCORE_LABEL_Y))
-        if self.pre_wave:
-            text(self.screen, str(self.level), SCORE_TEXT_SIZE, (WIDTH / 1.5, SCORE_VALUE_Y), GREEN)
-        else:
-            text(self.screen, str(self.level), SCORE_TEXT_SIZE, (WIDTH / 1.5, SCORE_VALUE_Y))
+        text(self.screen, str(self.level), SCORE_TEXT_SIZE, (WIDTH / 1.5, SCORE_VALUE_Y))
 
 
     def start_screen(self):
@@ -182,7 +179,7 @@ class Game:
             start_menu.draw(self.screen)
             text(self.screen, 'SPACE', 160, (WIDTH / 2, HEIGHT / 4))
             text(self.screen, 'INVADERS', 100, (WIDTH / 2, HEIGHT / 4 + 80))
-            self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
+            # self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
             pg.display.flip()
 
 
@@ -202,7 +199,7 @@ class Game:
             gameover_menu.draw(self.screen)
             text(self.screen, 'GAME OVER', 85, (WIDTH / 2, HEIGHT / 4 - 10))
             text(self.screen, f'SCORE {style_numbers(self.score)}', 50, (WIDTH / 2, HEIGHT / 3))
-            self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
+            # self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
             pg.display.flip()
 
 
