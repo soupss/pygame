@@ -1,8 +1,5 @@
 #### features
 
-* tutorial
-* destroyable bunkers
-* enemies drop powerups
 * upgrades between levels
     * scale enemies accordingly
     * upgrade ideas:
@@ -15,6 +12,10 @@
 	* refill bunkers
 	* new attack
 	* increase player movement speed
+* tutorial
+* options
+* destroyable bunkers
+* enemies drop powerups
 
 #### fix
 

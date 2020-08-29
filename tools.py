@@ -1,7 +1,6 @@
-'''
-This module contains resource loading functions
-Also contains general tools which don't belong anywhere else
-'''
+'''This module contains resource loading functions.
+
+Also contains general tools which don't belong anywhere else.'''
 # art made with https://www.piskelapp.com/
 # sound made with https://www.bfxr.net/
 from os import path
@@ -10,6 +9,8 @@ import pygame as pg
 from settings import *
 from sprites.mob import Mob
 
+# i added something here
+# look at the pretty, green plus
 
 def text(screen, text, size, pos, color=WHITE):
     font = pg.font.Font(path.join(FONT_DIR, FONT_NAME), size)
@@ -17,20 +18,6 @@ def text(screen, text, size, pos, color=WHITE):
     text_rect = text_surface.get_rect(center=pos)
     screen.blit(text_surface, text_rect)
     return text_surface
-
-
-def style_numbers(int):
-    string = str(int)
-    if len(string) != 5:
-        if len(string) == 1:
-            string = '0000' + string
-        if len(string) == 2:
-            string = '000' + string
-        if len(string) == 3:
-            string = '00' + string
-        if len(string) == 4:
-            string = '0' + string
-    return string
 
 
 class Menu:
@@ -132,7 +119,7 @@ class SoundController:
         self.dundun_rate = DUNDUN_RATE
         for sound_name in sound_name_list:
             self.effects[sound_name] = pg.mixer.Sound(path.join(SOUND_DIR, sound_name+'.ogg'))
-            self.effects[sound_name].set_volume(.5)
+            self.effects[sound_name].set_volume(.2)
 
     def play_effect(self, effect):
         self.effects[effect].play()

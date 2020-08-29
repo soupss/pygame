@@ -2,7 +2,7 @@ import os
 from os import path
 import pygame as pg
 from settings import *
-from tools import SpriteSheet, Menu, SoundController, text, style_numbers
+from tools import SpriteSheet, Menu, SoundController, text
 from sprites.player import Player
 from sprites.mob import MobGroup, Mob
 from sprites.bunker import Bunker
