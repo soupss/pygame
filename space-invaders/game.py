@@ -13,16 +13,22 @@ class Game:
     def __init__(self):
         pg.mixer.pre_init(44100, -16, 1, 512)
         pg.init()
-        # self.backscreen = pg.display.set_mode((0, 0), flags=pg.FULLSCREEN)
-        # self.backscreen.fill(BACKSCREEN_COLOR)
-        # self.screen = pg.Surface((WIDTH, HEIGHT))
-        self.screen = pg.display.set_mode((WIDTH, HEIGHT))
+        MONITOR_SIZE = Vector2(pg.display.Info().current_w, pg.display.Info().current_h)
+        self.screen = pg.Surface((WIDTH, HEIGHT))
+        # use scaled screen if window is too big
+        if HEIGHT > MONITOR_SIZE.y:
+            self.scale_screen = True
+            os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (MONITOR_SIZE.x / 2 - WIDTH_SCALED / 2, MONITOR_SIZE.y / 2 - HEIGHT_SCALED / 2 + 10)
+            self.screen_scaled = pg.display.set_mode((WIDTH_SCALED, HEIGHT_SCALED))
+        else:
+            self.scale_screen = False
+            os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (MONITOR_SIZE.x / 2 - WIDTH / 2, MONITOR_SIZE.y / 2 - HEIGHT / 2 + 10)
+            self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
-        self.load_data()
-        self.GAMESCREEN_POS = ((pg.display.Info().current_w - WIDTH) / 2, (pg.display.Info().current_h - HEIGHT) / 2)
-        self.running = True
         pg.mouse.set_visible(False)
+        self.load_data()
+        self.running = True
 
 
     def load_data(self):
@@ -147,7 +153,8 @@ class Game:
         self.screen.fill(BACKGROUND_COLOR)
         self.sprites.draw(self.screen)
         self.show_game_data()
-        # self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
+        if self.scale_screen:
+            pg.transform.scale(self.screen, (WIDTH_SCALED, HEIGHT_SCALED), self.screen_scaled)
         pg.display.flip()
 
 
@@ -176,11 +183,9 @@ class Game:
         while start_menu.waiting and self.running:
             start_menu.update()
             self.screen.fill(BACKGROUND_COLOR)
-            start_menu.draw(self.screen)
             text(self.screen, 'SPACE', 160, (WIDTH / 2, HEIGHT / 4))
             text(self.screen, 'INVADERS', 100, (WIDTH / 2, HEIGHT / 4 + 80))
-            # self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
-            pg.display.flip()
+            start_menu.draw(self.screen)
 
 
     def gameover_screen(self):
@@ -196,11 +201,9 @@ class Game:
         while gameover_menu.waiting and self.running:
             gameover_menu.update()
             self.screen.fill(BACKGROUND_COLOR)
-            gameover_menu.draw(self.screen)
             text(self.screen, 'GAME OVER', 85, (WIDTH / 2, HEIGHT / 4 - 10))
             text(self.screen, f'SCORE {style_numbers(self.score)}', 50, (WIDTH / 2, HEIGHT / 3))
-            # self.backscreen.blit(self.screen, self.GAMESCREEN_POS)
-            pg.display.flip()
+            gameover_menu.draw(self.screen)
 
 
     def quit(self):

@@ -102,6 +102,9 @@ class Menu:
                 screen.blit(self.icon, (WIDTH / 2 - text_surf.get_width() / 2 - 70, i * spacing + self.start_y - self.icon.get_height() / 3 + 5))
             else:
                 text(screen, label, self.text_size, (WIDTH / 2, i * spacing + self.start_y), WHITE)
+        if self.game.scale_screen:
+            pg.transform.scale(screen, (WIDTH_SCALED, HEIGHT_SCALED), self.game.screen_scaled)
+        pg.display.flip()
 
 
 class SpriteSheet:
