@@ -202,7 +202,7 @@ class Game:
             gameover_menu.update()
             self.screen.fill(BACKGROUND_COLOR)
             text(self.screen, 'GAME OVER', 85, (WIDTH / 2, HEIGHT / 4 - 10))
-            text(self.screen, f'SCORE {style_numbers(self.score)}', 50, (WIDTH / 2, HEIGHT / 3))
+            text(self.screen, f'SCORE {self.score}', 50, (WIDTH / 2, HEIGHT / 3))
             gameover_menu.draw(self.screen)
 
 
